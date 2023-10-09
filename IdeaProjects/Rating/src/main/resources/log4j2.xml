@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <!-- Define an appender for logging to a general file (application.log) -->
+        <File name="File" fileName="application.log">
+            <PatternLayout pattern="%d %p [%t] %c{1.} - %m%n" />
+        </File>
+
+        <!-- Define an appender for logging low reviews to a separate file (low_reviews.log) -->
+        <File name="LowReviewsFile" fileName="logs/low_reviews.log">
+            <PatternLayout pattern="%d %p [%t] %c{1.} - %m%n" />
+        </File>
+    </Appenders>
+
+    <Loggers>
+        <!-- Root logger configuration -->
+        <Root level="INFO">
+            <AppenderRef ref="File" />
+        </Root>
+
+        <!-- Create a new logger named "lowReviews" for reviews with a rating code less than 3 -->
+        <Logger name="lowReviews" level="ERROR">
+            <AppenderRef ref="LowReviewsFile" />
+        </Logger>
+    </Loggers>
+
+    <!-- Define a custom layout for iConnectX log records -->
+    <CustomLogFormat>
+        <PatternLayout pattern="iConnectX|%msg%n" />
+    </CustomLogFormat>
+</Configuration>
