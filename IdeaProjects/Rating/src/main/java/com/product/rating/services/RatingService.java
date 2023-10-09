@@ -5,6 +5,7 @@ import com.product.rating.model.RatingModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,54 +28,26 @@ public class RatingService {
     private final MongoTemplate mongoTemplate;
     private int currentId = 1;
 
+    @Value("${collection.name}")
+    private String collectionName; // Inject the collection name from application.properties
+
+    @Value("${customlog.dateformat}")
+    private String customLogDateFormat; // Inject the custom log date format
+
+    @Value("${customlog.messageformat}")
+    private String customLogMessageFormat; // Inject the custom log message format
+
     @Autowired
     public RatingService(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
-    public void captureLowRatingReview(RatingModel rating) {
-        int ratingCode = getRatingCodeFromReview(rating);
-        if (ratingCode < 3) {
-            // Log the low rating review using the "lowReviews" logger
-            lowReviewsLogger.error("Low rating review received: {}", getReviewText(rating));
-        } else {
-            // Log a regular info message
-            logger.info("Review received: {}", getReviewText(rating));
-        }
-    }
-    public void logCustomRecord(String firstName, String lastName, String zipCode) {
-        // Get the current date and time
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDateTime = currentDateTime.format(formatter);
-
-        // Create the custom log message in the desired format
-        String logMessage = "iConnectX|" + firstName + "|" + lastName + "|" + zipCode + "|" + formattedDateTime;
-
-        // Log the custom record
-        logger.info(logMessage);
-    }
-
-
-    public int getRatingCodeFromReview(RatingModel rating) {
-        // Replace this logic with how you actually retrieve the rating code from the RatingModel
-        return rating.getRateCode();
-    }
-
-    public String getReviewText(RatingModel rating) {
-        // Replace this logic with how you actually retrieve the review text from the RatingModel
-        return rating.getComments();
-    }
-
-    // Rest of your methods...
-
     public void createCollection(String collectionName) {
         try {
-            mongoTemplate.createCollection(collectionName);
-            logger.info("Created collection: {}", collectionName);
+            mongoTemplate.createCollection(this.collectionName); // Use the injected collection name
+            logger.info("Created collection: {}", this.collectionName); // Use the injected collection name
         } catch (Exception e) {
-            logger.error("Error creating collection {}: {}", collectionName, e.getMessage());
-            // Handle exceptions or rethrow them
+            logger.error("Error creating collection {}: {}", this.collectionName, e.getMessage()); // Use the injected collection name
         }
     }
 
@@ -84,20 +57,17 @@ public class RatingService {
             logger.info("Deleted collection: {}", collectionName);
         } catch (Exception e) {
             logger.error("Error deleting collection {}: {}", collectionName, e.getMessage());
-            // Handle exceptions or rethrow them
         }
     }
 
     public List<RatingModel> viewAllReviews() {
         List<RatingModel> result = new ArrayList<>();
-
         Set<String> collectionNames = mongoTemplate.getCollectionNames();
 
         for (String collectionName : collectionNames) {
             try {
                 logger.info("Fetching data from collection: {}", collectionName);
                 Query query = new Query();
-
                 List<RatingModel> collectionData = mongoTemplate.find(query, RatingModel.class, collectionName);
                 result.addAll(collectionData);
             } catch (Exception e) {
@@ -109,78 +79,57 @@ public class RatingService {
 
     public ResponseEntity<String> insertRating(String collectionName, RatingModel rating) {
         try {
-            // Check the number of existing entries in the collection
             long entryCount = mongoTemplate.count(new Query(), collectionName);
 
             if (entryCount == 0) {
-                // If there are no existing entries, reset the ID to 1
                 currentId = 1;
             } else {
-                // If there are existing entries, increment the ID
                 currentId++;
             }
 
-            // Set the current date and time as a formatted String
             LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(customLogDateFormat); // Use the injected custom log date format
             String formattedDateTime = currentDateTime.format(formatter);
             rating.setDateTime(formattedDateTime);
 
-            // Set the ID for the new entry
             rating.setId(Integer.toString(currentId));
 
-            // Insert the rating into the specified collection
             mongoTemplate.insert(rating, collectionName);
 
-            // Data inserted successfully
             return ResponseEntity.ok("Inserted Rating with ID: " + rating.getId() + " at " + rating.getDateTime());
         } catch (Exception e) {
-            // Handle exceptions if necessary
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert Rating: " + e.getMessage());
         }
     }
 
     public boolean deleteReviewById(String collectionName, String id) {
         try {
-            // Create a query to find the document by the current ID
             Query query = new Query(Criteria.where("_id").is(id));
-
-            // Find the existing document in the specified collection
             RatingModel existingRating = mongoTemplate.findOne(query, RatingModel.class, collectionName);
 
             if (existingRating == null) {
-                return false; // Return false if the document is not found
+                return false;
             }
 
-            // Delete the document
             mongoTemplate.remove(existingRating, collectionName);
-
-            return true; // Return true if the deletion is successful
+            return true;
         } catch (Exception e) {
-            logger.error("Error deleting data by ID in collection {}: {}", collectionName, e.getMessage());
-            return false; // Return false if there's an error during deletion
+            lowReviewsLogger.error("Error deleting data by ID in collection {}: {}", collectionName, e.getMessage());
+            return false;
         }
     }
 
     public ResponseEntity<RatingDomain> updateReviewById(String collectionName, String id, RatingDomain updatedRating) {
         try {
-            // Extract the new ID from the updatedRating object
             String newId = updatedRating.getId();
-
-            // Update the ID in the existingRating object
             updatedRating.setId(id);
-
-            // Create a query to find the document by the current ID
             Query query = new Query(Criteria.where("_id").is(id));
-
-            // Find the existing document in the specified collection
             RatingDomain existingRating = mongoTemplate.findOne(query, RatingDomain.class, collectionName);
 
             if (existingRating == null) {
-                return ResponseEntity.notFound().build(); // Return a not found response
+                return ResponseEntity.notFound().build();
             }
 
-            // Update the fields with the new values (excluding the ID)
             existingRating.setProductName(updatedRating.getProductName());
             existingRating.setFirstName(updatedRating.getFirstName());
             existingRating.setLastName(updatedRating.getLastName());
@@ -189,25 +138,45 @@ public class RatingService {
             existingRating.setComments(updatedRating.getComments());
             existingRating.setDateTime(updatedRating.getDateTime());
 
-            // Update the ID with the new ID
             existingRating.setId(newId);
 
-            // Save the updated document back to the collection
             RatingDomain updatedReview = mongoTemplate.save(existingRating, collectionName);
 
             return ResponseEntity.ok(updatedReview);
         } catch (Exception e) {
             logger.error("Error updating data by ID in collection {}: {}", collectionName, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Return an internal server error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    public List<RatingModel> viewLatestReviews(int limit) {
-        // Create a query to retrieve the latest reviews based on a timestamp field
-        Query query = new Query().with(Sort.by(Sort.Order.desc("timestamp"))).limit(limit);
-
-        // Use the MongoTemplate to execute the query and retrieve the reviews
-
-        return mongoTemplate.find(query, RatingModel.class);
+    public List<RatingModel> getLatestReviews(int limit) {
+        Query query = new Query()
+                .with(Sort.by(Sort.Order.asc("timestamp")))
+                .limit(limit);
+        return mongoTemplate.find(query, RatingModel.class, collectionName);
     }
+
+
+    public void logLowRatingReview(RatingModel review) {
+        // Extract the rating code from the review
+        int ratingCode = review.getRateCode();
+
+        // Check if the rating code is less than 3
+        if (ratingCode < 3) {
+            // Log the low-rated review
+            lowReviewsLogger.error("Low-rated review with rating code: " + ratingCode);
+        }
+    }
+
+
+
+
+
+    public List<RatingModel> findReviewsByRateCode(int rateCode) {
+        Query query = new Query(Criteria.where("rateCode").is(rateCode));
+        return mongoTemplate.find(query, RatingModel.class, collectionName); // Use the injected collection name
+    }
+
+
 }
+

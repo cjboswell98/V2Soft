@@ -2,30 +2,34 @@
 <Configuration status="WARN">
     <Appenders>
         <!-- Define an appender for logging to a general file (application.log) -->
-        <File name="File" fileName="application.log">
+        <File name="File" fileName="logs/application.log">
             <PatternLayout pattern="%d %p [%t] %c{1.} - %m%n" />
         </File>
 
-        <!-- Define an appender for logging low reviews to a separate file (low_reviews.log) -->
-        <File name="LowReviewsFile" fileName="logs/low_reviews.log">
+        <!-- Define an appender for logging low reviews to a separate file (lowReviews.log) -->
+        <File name="LowReviewsFile" fileName="logs/lowReviews.log">
             <PatternLayout pattern="%d %p [%t] %c{1.} - %m%n" />
+        </File>
+
+        <!-- Define an appender for logging formatted reviews to a separate file (formattedReview.log) -->
+        <File name="FormattedReviewFile" fileName="logs/formattedReview.log">
+            <PatternLayout pattern="%m%n" />
         </File>
     </Appenders>
 
     <Loggers>
-        <!-- Root logger configuration -->
-        <Root level="INFO">
+        <Root level="info">
             <AppenderRef ref="File" />
         </Root>
 
         <!-- Create a new logger named "lowReviews" for reviews with a rating code less than 3 -->
-        <Logger name="lowReviews" level="ERROR">
+        <Logger name="lowReviews" level="error">
             <AppenderRef ref="LowReviewsFile" />
         </Logger>
-    </Loggers>
 
-    <!-- Define a custom layout for iConnectX log records -->
-    <CustomLogFormat>
-        <PatternLayout pattern="iConnectX|%msg%n" />
-    </CustomLogFormat>
+        <!-- Create a new logger named "formattedReview" for displaying and logging formatted reviews -->
+        <Logger name="formattedReview" level="info">
+            <AppenderRef ref="FormattedReviewFile" />
+        </Logger>
+    </Loggers>
 </Configuration>
