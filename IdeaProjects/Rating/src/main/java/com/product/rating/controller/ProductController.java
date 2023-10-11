@@ -12,13 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static com.product.rating.services.RatingService.lowReviewsLogger;
 
 @RestController
 @RequestMapping("/reviews")
+@CrossOrigin(origins = "http://localhost:4200") // Allow requests from your Angular app
 public class ProductController {
 
     private final RatingService ratingService;
@@ -42,6 +40,7 @@ public class ProductController {
         this.mongoTemplate = mongoTemplate;
     }
 
+
     @PostMapping("/createCollection")
     public ResponseEntity<String> createCollection(@RequestParam String collectionName) {
         try {
@@ -64,29 +63,14 @@ public class ProductController {
 
     //C (R) U D
     @GetMapping("/viewReviews")
-    public ResponseEntity<List<String>> viewAllReviewsFormatted() {
+    public ResponseEntity<List<RatingModel>> viewAllReviews() {
         List<RatingModel> ratings = ratingService.viewAllReviews();
         if (ratings.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            // Create a list to store the formatted reviews
-            List<String> formattedReviews = new ArrayList<>();
-
-            // Format and log each review using the "formattedReview" logger
-            for (RatingModel rating : ratings) {
-                String formattedReview = String.format("%s|%s|%s|%s|%s", rating.getProductName(), rating.getFirstName(), rating.getLastName(), rating.getZipCode(), rating.getDateTime());
-
-                // Log the formatted review using the "formattedReview" logger
-                formattedReviewLogger.info(formattedReview);
-
-                formattedReviews.add(formattedReview); // Add the formatted review to the list
-            }
-
-            // Return the list of formatted reviews
-            return new ResponseEntity<>(formattedReviews, HttpStatus.OK);
+            return new ResponseEntity<>(ratings, HttpStatus.OK);
         }
     }
-
 
     //C (R) U D
     @GetMapping("/viewLatestReviews")
@@ -131,7 +115,6 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert Rating: " + e.getMessage());
         }
     }
-
 
     //C R (U) D
     @PutMapping("/updateReview/{id}")

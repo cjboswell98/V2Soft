@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
@@ -121,8 +122,6 @@ public class RatingService {
 
     public ResponseEntity<RatingDomain> updateReviewById(String collectionName, String id, RatingDomain updatedRating) {
         try {
-            String newId = updatedRating.getId();
-            updatedRating.setId(id);
             Query query = new Query(Criteria.where("_id").is(id));
             RatingDomain existingRating = mongoTemplate.findOne(query, RatingDomain.class, collectionName);
 
@@ -130,32 +129,41 @@ public class RatingService {
                 return ResponseEntity.notFound().build();
             }
 
+            logger.info("Updating Rating with ID: {}", id);
+
+            // Add the existingRating to the historyList before updating it
+            existingRating.addToHistory();
+
+            // Update the existingRating with the properties from updatedRating
             existingRating.setProductName(updatedRating.getProductName());
             existingRating.setFirstName(updatedRating.getFirstName());
             existingRating.setLastName(updatedRating.getLastName());
-            existingRating.setRateCode(updatedRating.getRateCode());
             existingRating.setZipCode(updatedRating.getZipCode());
+            existingRating.setRateCode(updatedRating.getRateCode());
             existingRating.setComments(updatedRating.getComments());
             existingRating.setDateTime(updatedRating.getDateTime());
 
-            existingRating.setId(newId);
+            // Save the updated existingRating to replace the existing document
+            mongoTemplate.save(existingRating, collectionName);
 
-            RatingDomain updatedReview = mongoTemplate.save(existingRating, collectionName);
+            logger.info("Rating with ID {} updated successfully");
 
-            return ResponseEntity.ok(updatedReview);
+            return ResponseEntity.ok(existingRating);
         } catch (Exception e) {
             logger.error("Error updating data by ID in collection {}: {}", collectionName, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
+
+
     public List<RatingModel> getLatestReviews(int limit) {
         Query query = new Query()
-                .with(Sort.by(Sort.Order.asc("timestamp")))
+                .with(Sort.by(Sort.Order.asc("_id")))
                 .limit(limit);
         return mongoTemplate.find(query, RatingModel.class, collectionName);
     }
-
+//datetime
 
     public void logLowRatingReview(RatingModel review) {
         // Extract the rating code from the review
@@ -164,13 +172,9 @@ public class RatingService {
         // Check if the rating code is less than 3
         if (ratingCode < 3) {
             // Log the low-rated review
-            lowReviewsLogger.error("Low-rated review with rating code: " + ratingCode);
+            lowReviewsLogger.info("Low-rated review with rating code: " + ratingCode);
         }
     }
-
-
-
-
 
     public List<RatingModel> findReviewsByRateCode(int rateCode) {
         Query query = new Query(Criteria.where("rateCode").is(rateCode));

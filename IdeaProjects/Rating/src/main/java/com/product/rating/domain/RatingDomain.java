@@ -1,10 +1,13 @@
 package com.product.rating.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Document(collection = "Reviews")
 public class RatingDomain {
     @Id
     private String id;
@@ -17,12 +20,30 @@ public class RatingDomain {
     private String comments;
     private String dateTime;
 
-    private History history = new History(); // Create a history object
+    @Field("historyList")
+    private final List<RatingDomain> historyList = new ArrayList<>();
 
-    public RatingDomain() {}
 
-    // Getters and Setters (Including Current Fields and History Fields)
 
+    public RatingDomain(String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+        this.productName = productName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.zipCode = zipCode;
+        this.rateCode = rateCode;
+        this.comments = comments;
+        this.dateTime = dateTime;
+    }
+
+
+
+    // Getters and Setters (Including Current Fields)
+
+
+    public void setHistoryList(List<RatingDomain> historyList) {
+        this.historyList.clear();
+        this.historyList.addAll(historyList);
+    }
     // ID
     public String getId() {
         return id;
@@ -38,9 +59,6 @@ public class RatingDomain {
     }
 
     public void setProductName(String productName) {
-        if (isDifferent(this.productName, productName)) {
-            history.getProductNameHistory().add(this.productName);
-        }
         this.productName = productName;
     }
 
@@ -50,9 +68,6 @@ public class RatingDomain {
     }
 
     public void setFirstName(String firstName) {
-        if (isDifferent(this.firstName, firstName)) {
-            history.getFirstNameHistory().add(this.firstName);
-        }
         this.firstName = firstName;
     }
 
@@ -62,9 +77,6 @@ public class RatingDomain {
     }
 
     public void setLastName(String lastName) {
-        if (isDifferent(this.lastName, lastName)) {
-            history.getLastNameHistory().add(this.lastName);
-        }
         this.lastName = lastName;
     }
 
@@ -74,9 +86,6 @@ public class RatingDomain {
     }
 
     public void setZipCode(String zipCode) {
-        if (isDifferent(this.zipCode, zipCode)) {
-            history.getZipCodeHistory().add(this.zipCode);
-        }
         this.zipCode = zipCode;
     }
 
@@ -86,9 +95,6 @@ public class RatingDomain {
     }
 
     public void setRateCode(int rateCode) {
-        if (this.rateCode != rateCode) {
-            history.getRateCodeHistory().add(this.rateCode);
-        }
         this.rateCode = rateCode;
     }
 
@@ -98,9 +104,6 @@ public class RatingDomain {
     }
 
     public void setComments(String comments) {
-        if (isDifferent(this.comments, comments)) {
-            history.getCommentsHistory().add(this.comments);
-        }
         this.comments = comments;
     }
 
@@ -110,20 +113,17 @@ public class RatingDomain {
     }
 
     public void setDateTime(String dateTime) {
-        if (isDifferent(this.dateTime, dateTime)) {
-            history.getDateTimeHistory().add(this.dateTime);
-        }
         this.dateTime = dateTime;
     }
 
-    // Get the history object
-    public History getHistory() {
-        return history;
+    // Get the history list
+    public List<RatingDomain> getHistoryList() {
+        return historyList;
     }
 
-    // Helper Method to Check if Two Strings are Different
-    private boolean isDifferent(String currentValue, String newValue) {
-        return (currentValue != null && !currentValue.equals(newValue));
+    public void addToHistory() {
+        RatingDomain newVersion = new RatingDomain(productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
+        historyList.add(newVersion);
     }
 
     @Override
@@ -137,76 +137,7 @@ public class RatingDomain {
                 ", rateCode=" + rateCode +
                 ", comments='" + comments + '\'' +
                 ", dateTime='" + dateTime + '\'' +
-                ", history=" + history +
+                ", historyList=" + historyList +
                 '}';
     }
-
-    public class History {
-        private List<String> productNameHistory = new ArrayList<>();
-        private List<String> firstNameHistory = new ArrayList<>();
-        private List<String> lastNameHistory = new ArrayList<>();
-        private List<String> zipCodeHistory = new ArrayList<>();
-        private List<Integer> rateCodeHistory = new ArrayList<>();
-        private List<String> commentsHistory = new ArrayList<>();
-        private List<String> dateTimeHistory = new ArrayList<>();
-
-        public List<String> getProductNameHistory() {
-            return productNameHistory;
-        }
-
-        public List<String> getFirstNameHistory() {
-            return firstNameHistory;
-        }
-
-        public List<String> getLastNameHistory() {
-            return lastNameHistory;
-        }
-
-        public List<String> getZipCodeHistory() {
-            return zipCodeHistory;
-        }
-
-        public List<Integer> getRateCodeHistory() {
-            return rateCodeHistory;
-        }
-
-        public List<String> getCommentsHistory() {
-            return commentsHistory;
-        }
-
-        public List<String> getDateTimeHistory() {
-            return dateTimeHistory;
-        }
-
-        // Add history entries for each field
-        public void addProductNameHistory(String entry) {
-            productNameHistory.add(entry);
-        }
-
-        public void addFirstNameHistory(String entry) {
-            firstNameHistory.add(entry);
-        }
-
-        public void addLastNameHistory(String entry) {
-            lastNameHistory.add(entry);
-        }
-
-        public void addZipCodeHistory(String entry) {
-            zipCodeHistory.add(entry);
-        }
-
-        public void addRateCodeHistory(Integer entry) {
-            rateCodeHistory.add(entry);
-        }
-
-        public void addCommentsHistory(String entry) {
-            commentsHistory.add(entry);
-        }
-
-        public void addDateTimeHistory(String entry) {
-            dateTimeHistory.add(entry);
-        }
-    }
-
-
 }

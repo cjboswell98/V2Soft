@@ -92,17 +92,5 @@ public class RatingModel {
     }
 
 
-    @Override
-    public String toString() {
-        return "RatingModel{" +
-                "id='" + id + '\'' +
-                ", productName='" + productName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", rateCode=" + rateCode +
-                ", comments='" + comments + '\'' +
-                ", dateTime='" + dateTime + '\'' +
-                '}';
-    }
+
 }
