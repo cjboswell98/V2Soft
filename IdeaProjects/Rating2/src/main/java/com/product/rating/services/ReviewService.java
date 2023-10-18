@@ -1,9 +1,9 @@
 package com.product.rating.services;
 
-import com.mongodb.client.result.DeleteResult;
 import com.product.rating.domain.Client;
-import com.product.rating.domain.RatingDomain;
-import com.product.rating.model.RatingModel;
+import com.product.rating.domain.ReviewDomain;
+import com.product.rating.repository.ClientRepository;
+import com.product.rating.repository.ReviewRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class RatingService {
@@ -29,7 +24,15 @@ public class RatingService {
     private static final Logger logger = LogManager.getLogger(RatingService.class);
     public static final Logger lowReviewsLogger = LogManager.getLogger("lowReviews");
     private final MongoTemplate mongoTemplate;
-    private int currentId = 1;
+    private final ClientRepository clientRepository;
+    private final ReviewRepository reviewRepository;
+
+    @Autowired
+    public RatingService(ClientRepository clientRepository, MongoTemplate mongoTemplate, ReviewRepository reviewRepository) {
+        this.clientRepository = clientRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.reviewRepository = reviewRepository;
+    }
 
     @Value("${collection.name}")
     private String collectionName; // Inject the collection name from application.properties
@@ -40,10 +43,6 @@ public class RatingService {
     @Value("${customlog.messageformat}")
     private String customLogMessageFormat; // Inject the custom log message format
 
-    @Autowired
-    public RatingService(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
 
     public void createCollection(String collectionName) {
         try {
@@ -63,15 +62,15 @@ public class RatingService {
         }
     }
 
-    public List<RatingModel> viewAllReviews() {
-        List<RatingModel> result = new ArrayList<>();
+    public List<ReviewDomain> viewAllReviews() {
+        List<ReviewDomain> result = new ArrayList<>();
         Set<String> collectionNames = mongoTemplate.getCollectionNames();
 
         for (String collectionName : collectionNames) {
             try {
                 logger.info("Fetching data from collection: {}", collectionName);
                 Query query = new Query();
-                List<RatingModel> collectionData = mongoTemplate.find(query, RatingModel.class, collectionName);
+                List<ReviewDomain> collectionData = mongoTemplate.find(query, ReviewDomain.class, collectionName);
                 result.addAll(collectionData);
             } catch (Exception e) {
                 logger.error("Error fetching data from collection {}: {}", collectionName, e.getMessage());
@@ -80,54 +79,71 @@ public class RatingService {
         return result;
     }
 
-    public List<RatingModel> viewReviewsInCollection(String collectionName) {
+    public List<ReviewDomain> viewReviewsInCollection(String collectionName) {
         try {
             logger.info("Fetching data from collection: {}", collectionName);
             Query query = new Query();
-            List<RatingModel> collectionData = mongoTemplate.find(query, RatingModel.class, collectionName);
+            List<ReviewDomain> collectionData = mongoTemplate.find(query, ReviewDomain.class, collectionName);
             return collectionData;
         } catch (Exception e) {
             logger.error("Error fetching data from collection {}: {}", collectionName, e.getMessage());
             return Collections.emptyList();
         }
     }
-//test by token
 
-    public ResponseEntity<String> insertRating(String collectionName, RatingModel rating, String clientId) {
+    public String addReview(ReviewDomain newReview) {
         try {
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(customLogDateFormat); // Use the injected custom log date format
-            String formattedDateTime = currentDateTime.format(formatter);
-            rating.setDateTime(formattedDateTime);
+            List<Client> clients = clientRepository.findAll(Sort.by(Sort.Direction.DESC, "clientId"));
+            if (clients.isEmpty()) {
+                throw new NoSuchElementException("No clients found in the collection");
+            }
+            String clientId = clients.get(0).getClientId(); // Fetch the most recent client ID
+            newReview.setClientId(clientId);
+            newReview.setReviewId(UUID.randomUUID().toString()); // Generate a random ID for the review
 
-            rating.setId(clientId); // Set the client ID as the ID for the rating
+            // Any additional logic or validation before adding the review can be added here
 
-            mongoTemplate.insert(rating, collectionName);
+            // Assuming you have the necessary repository injected
+            // Add the new review to the collection
+            reviewRepository.save(newReview);
 
-            return ResponseEntity.ok("Inserted Rating with ID: " + rating.getId() + " for Client ID: " + clientId + " at " + rating.getDateTime());
+            return "Review added successfully with reviewId: " + newReview.getReviewId();
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert Rating: " + e.getMessage());
+            throw new RuntimeException("Failed to add review: " + e.getMessage());
         }
     }
 
+//test by token
 
-    public boolean deleteReviewById(String collectionName, String id) {
+//    public ResponseEntity<String> insertRating(String collectionName, RatingDomain rating, String clientId) {
+//        try {
+//            LocalDateTime currentDateTime = LocalDateTime.now();
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(customLogDateFormat); // Use the injected custom log date format
+//            String formattedDateTime = currentDateTime.format(formatter);
+//            rating.setDateTime(formattedDateTime);
+//
+//            rating.setReviewId(clientId); // Set the client ID as the ID for the rating
+//
+//            mongoTemplate.insert(rating, collectionName);
+//
+//            return ResponseEntity.ok("Inserted Rating with ID: " + rating.getReviewId() + " for Client ID: " + clientId + " at " + rating.getDateTime());
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to insert Rating: " + e.getMessage());
+//        }
+//    }
+
+
+    public boolean deleteReviewById(String collectionName, String reviewId) {
         try {
             // Deleting from the first collection
-            Query ratingQuery = new Query(Criteria.where("_id").is(id));
-            RatingModel existingRating = mongoTemplate.findOne(ratingQuery, RatingModel.class, collectionName);
+            Query ratingQuery = new Query(Criteria.where("_id").is(reviewId)); // Change the field to "_id"
+            ReviewDomain existingRating = mongoTemplate.findOne(ratingQuery, ReviewDomain.class, collectionName);
 
             if (existingRating != null) {
                 mongoTemplate.remove(existingRating, collectionName);
             }
 
-            // Deleting from the second collection
-            Query clientQuery = new Query(Criteria.where("clientId").is(id));
-            Client existingClient = mongoTemplate.findOne(clientQuery, Client.class);
-
-            if (existingClient != null) {
-                mongoTemplate.remove(existingClient);
-            }
+            // No need to delete from the second collection based on reviewId
 
             return true;
         } catch (Exception e) {
@@ -136,19 +152,10 @@ public class RatingService {
         }
     }
 
-
-
-    public boolean deleteReviewByClientId(String collectionName, String clientId) {
-        Query query = new Query(Criteria.where("clientId").is(clientId)); // Construct a query based on the provided clientId
-        DeleteResult result = mongoTemplate.remove(query, collectionName); // Use mongoTemplate to remove the document from the collection
-
-        return result.wasAcknowledged(); // Return whether the deletion was acknowledged
-    }
-
-    public ResponseEntity<RatingDomain> updateReviewById(String collectionName, String id, RatingDomain updatedRating) {
+    public ResponseEntity<ReviewDomain> updateReviewById(String collectionName, String id, ReviewDomain updatedRating) {
         try {
             Query query = new Query(Criteria.where("_id").is(id));
-            RatingDomain existingRating = mongoTemplate.findOne(query, RatingDomain.class, collectionName);
+            ReviewDomain existingRating = mongoTemplate.findOne(query, ReviewDomain.class, collectionName);
 
             if (existingRating == null) {
                 return ResponseEntity.notFound().build();
@@ -180,15 +187,15 @@ public class RatingService {
         }
     }
 
-    public List<RatingModel> getLatestReviews(int limit) {
+    public List<ReviewDomain> getLatestReviews(int limit) {
         Query query = new Query()
                 .with(Sort.by(Sort.Order.asc("_id")))
                 .limit(limit);
-        return mongoTemplate.find(query, RatingModel.class, collectionName);
+        return mongoTemplate.find(query, ReviewDomain.class, collectionName);
     }
 //datetime
 
-    public void logLowRatingReview(RatingModel review) {
+    public void logLowRatingReview(ReviewDomain review) {
         // Extract the rating code from the review
         int ratingCode = review.getRateCode();
 
@@ -199,9 +206,11 @@ public class RatingService {
         }
     }
 
-    public List<RatingModel> findReviewsByRateCode(int rateCode) {
+    public List<ReviewDomain> findReviewsByRateCode(int rateCode) {
         Query query = new Query(Criteria.where("rateCode").is(rateCode));
-        return mongoTemplate.find(query, RatingModel.class, collectionName); // Use the injected collection name
+        return mongoTemplate.find(query, ReviewDomain.class, collectionName); // Use the injected collection name
     }
+
+
 }
 

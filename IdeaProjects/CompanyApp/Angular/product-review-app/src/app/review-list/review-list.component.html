@@ -1,0 +1,19 @@
+<p> </p>
+<li class="nav-item"><a routerLink="/review-submit">Submit Review</a></li>
+
+
+<div class="review-list mat-elevation-z2"> <!-- Add Angular Material elevation class for shadow -->
+  <h2>Review List</h2>
+  <ul>
+    <li *ngFor="let review of reviews" class="mat-card"> <!-- Add Angular Material card class -->
+      <h3>Review ID: {{ review.reviewId }}</h3>
+      <h4>Product Name: {{ review.productName }}</h4>
+      <p>First & Last Name: {{ review.firstName }} {{ review.lastName }}</p>
+      <p>Zip Code: {{ review.zipCode }}</p>
+      <p>Rate Code: {{ review.rateCode }}</p>
+      <p>Comments: {{ review.comments }}</p>
+      <p>Date Time: {{ review.dateTime }}</p>
+      <!-- Add more properties as needed -->
+    </li>
+  </ul>
+</div>

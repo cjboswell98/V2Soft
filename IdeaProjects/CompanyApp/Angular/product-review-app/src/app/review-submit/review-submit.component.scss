@@ -1,0 +1,71 @@
+.nav-item {
+    margin: 10px;
+    display: inline-block;
+    a {
+      text-decoration: none;
+      padding: 10px;
+      border: 1px solid  #007bff;
+      border-radius: 5px;
+      color:  #007bff;
+      transition: all 0.3s;
+      &:hover {
+        background-color: #007bff;
+        color: white;
+      }
+    }
+  }
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    color: #007bff; /* Set label text color to blue */
+  }
+  
+  input[type="text"],
+  input[type="datetime-local"],
+  textarea,
+  select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 300px;
+    margin-bottom: 20px;
+    color: black; /* Set input text color to blue */
+  }
+  
+  select {
+    width: 320px;
+    color: #007bff; /* Set select text color to blue */
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    width: 300px;
+  }
+  
+  button:hover {
+    background-color: #f44336;
+  }
+  
+  button:active {
+    background-color: #007bff;
+  }
+  
+  div {
+    color: red; /* Set error message color to red */
+    margin-bottom: 10px;
+  }
+  

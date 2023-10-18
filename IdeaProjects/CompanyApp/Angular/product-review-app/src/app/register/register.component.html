@@ -1,0 +1,15 @@
+<p> </p>
+
+<h2>Register</h2>
+
+<form (ngSubmit)="onSubmit()">
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" [(ngModel)]="username">
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" [(ngModel)]="password">
+    </div>
+    <button type="submit">Register</button>
+</form>

@@ -1,0 +1,53 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: -30px;
+    text-align: center; /* Add this line to center the text */
+  }
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    
+  
+    div {
+      margin-bottom: 20px;
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input {
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+    }
+  
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+  
+      &:hover {
+        background-color: #f44336;
+      }
+  
+      &:active {
+        background-color: #3f51b5;
+      }
+    }
+  }
+  

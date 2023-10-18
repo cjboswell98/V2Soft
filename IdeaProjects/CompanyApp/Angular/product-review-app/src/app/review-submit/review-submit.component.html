@@ -1,0 +1,67 @@
+<p> </p>
+<li class="nav-item"><a routerLink="/review-list">Reviews</a></li>
+<form (ngSubmit)="submitReview()" [formGroup]="newReviewForm">
+  <h2>Add Review</h2>
+  <div>
+      <label for="productName">Product Name:</label>
+      <select id="productName" name="productName" formControlName="productName" required>
+          <option value="iConnectX">iConnectX</option>
+          <option value="EmployMe">EmployMe</option>
+          <option value="WeInvite">WeInvite</option>
+          <option value="CompanyTRAK">CompanyTRAK</option>
+      </select>
+  </div>
+
+  <div>
+      <label for="firstName">First Name:</label>
+      <input type="text" id="firstName" name="firstName" formControlName="firstName">
+      <div *ngIf="newReviewForm.get('firstName')?.hasError('required') && newReviewForm.get('firstName')?.touched">
+          First name is required.
+      </div>
+      <div *ngIf="newReviewForm.get('firstName')?.hasError('pattern') && newReviewForm.get('firstName')?.touched">
+          First name cannot start with a number.
+      </div>
+  </div>
+
+  <div>
+      <label for="lastName">Last Name:</label>
+      <input type="text" id="lastName" name="lastName" formControlName="lastName" required>
+  </div>
+
+  <div>
+      <label for="zipCode">Zip Code:</label>
+      <input type="text" id="zipCode" name="zipCode" formControlName="zipCode">
+      <div *ngIf="newReviewForm.get('zipCode')?.hasError('required') && newReviewForm.get('zipCode')?.touched">
+          Zip code is required.
+      </div>
+      <div *ngIf="newReviewForm.get('zipCode')?.hasError('invalidZipCode') && newReviewForm.get('zipCode')?.touched">
+          Zip code must be 5 or 9 digits.
+      </div>
+  </div>
+
+  <div>
+      <label for="rateCode">Rate Code:</label>
+      <select id="rateCode" name="rateCode" formControlName="rateCode" required>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+      </select>
+  </div>
+
+  <div>
+      <label for="comments">Comments:</label>
+      <textarea id="comments" name="comments" formControlName="comments" required></textarea>
+  </div>
+
+  <div>
+      <label for="dateTime">Date and Time:</label>
+      <input type="datetime-local" id="dateTime" name="dateTime" formControlName="dateTime">
+  </div>
+
+  <button type="submit" [disabled]="!newReviewForm.valid">Submit Review</button>
+  <div *ngIf="newReviewForm.invalid && newReviewForm.dirty">
+      Please fill out all fields.
+  </div>
+</form>

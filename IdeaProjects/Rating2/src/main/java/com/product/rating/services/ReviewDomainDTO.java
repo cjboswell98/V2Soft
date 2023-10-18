@@ -1,20 +1,16 @@
-package com.product.rating.domain;
+package com.product.rating.services;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.product.rating.domain.ReviewDomain;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "Reviews")
-public class RatingDomain {
+public class RatingDomainDTO {
     @Id
-    private String id;
-
+    private String reviewId;
+    private String clientId;
     private String productName;
     private String firstName;
     private String lastName;
@@ -24,35 +20,34 @@ public class RatingDomain {
     private String dateTime;
 
     @Field("historyList")
-    private final List<RatingDomain> historyList = new ArrayList<>();
+    private final List<ReviewDomain> historyList = new ArrayList<>();
 
-    public RatingDomain() {
-    }
-
-    public RatingDomain(String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
-        this.productName = productName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.zipCode = zipCode;
-        this.rateCode = rateCode;
-        this.comments = comments;
-        this.dateTime = dateTime;
+    public RatingDomainDTO() {
     }
 
     // Getters and Setters (Including Current Fields)
 
 
-    public void setHistoryList(List<RatingDomain> historyList) {
+    public void setHistoryList(List<ReviewDomain> historyList) {
         this.historyList.clear();
         this.historyList.addAll(historyList);
     }
     // ID
-    public String getId() {
-        return id;
+
+    public String getReviewId() {
+        return reviewId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     // Product Name
@@ -119,19 +114,19 @@ public class RatingDomain {
     }
 
     // Get the history list
-    public List<RatingDomain> getHistoryList() {
+    public List<ReviewDomain> getHistoryList() {
         return historyList;
     }
 
     public void addToHistory() {
-        RatingDomain newVersion = new RatingDomain(productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
+        ReviewDomain newVersion = new ReviewDomain(clientId, reviewId, productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
         historyList.add(newVersion);
     }
 
     @Override
     public String toString() {
         return "RatingDomain{" +
-                "id='" + id + '\'' +
+                "reviewId='" + reviewId + '\'' +
                 ", productName='" + productName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
