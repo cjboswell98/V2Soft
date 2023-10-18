@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewRepository extends MongoRepository<ReviewDomain, String> {
+    long deleteByReviewId(String reviewId);
 }
 

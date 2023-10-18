@@ -1,5 +1,6 @@
 package com.product.rating.controller;
 
+// Import necessary packages and libraries
 import com.product.rating.domain.Client;
 import com.product.rating.domain.ReviewDomain;
 import com.product.rating.repository.ClientRepository;
@@ -22,13 +23,17 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:4200") // Allow requests from your Angular app
 public class ProductController {
 
+    // Service and repository dependencies
     private final ClientService clientService;
     private final ReviewService reviewService;
     private final MongoTemplate mongoTemplate;
-    public static final Logger lowReviewsLogger = LogManager.getLogger("lowReviews");
-    private static final Logger formattedReviewLogger = LogManager.getLogger("formattedReview");
     private final ClientRepository clientRepository;
 
+    // Logger declarations
+    public static final Logger lowReviewsLogger = LogManager.getLogger("lowReviews");
+    private static final Logger formattedReviewLogger = LogManager.getLogger("formattedReview");
+
+    // Constructor for dependency injection
     @Autowired
     public ProductController(ReviewService reviewService, MongoTemplate mongoTemplate, ClientService clientService, ClientRepository clientRepository) {
         this.reviewService = reviewService;
@@ -37,6 +42,7 @@ public class ProductController {
         this.clientRepository = clientRepository;
     }
 
+    // Injected values from application.properties
     @Value("${collection.name}")
     private String collectionName; // Inject the collection name from application.properties
 
@@ -46,9 +52,10 @@ public class ProductController {
     @Value("${customlog.messageformat}")
     private String customLogMessageFormat; // Inject the custom log message format
 
-
+    // REST API endpoint to create a new collection
     @PostMapping("/createCollection")
     public ResponseEntity<String> createCollection(@RequestParam String collectionName) {
+        // Try to create a new collection
         try {
             reviewService.createCollection(this.collectionName); // Use the injected collection name
             return new ResponseEntity<>("Collection created successfully", HttpStatus.CREATED);
@@ -57,8 +64,10 @@ public class ProductController {
         }
     }
 
+    // REST API endpoint to delete a collection
     @DeleteMapping("/deleteCollection/{collectionName}")
     public ResponseEntity<String> deleteCollection(@PathVariable String collectionName) {
+        // Try to delete a collection
         try {
             reviewService.deleteCollection(this.collectionName); // Use the injected collection name
             return new ResponseEntity<>("Collection deleted successfully", HttpStatus.OK);
@@ -67,9 +76,11 @@ public class ProductController {
         }
     }
 
-    //C (R) U D
+    // C (R) U D
+    // REST API endpoint to view all reviews
     @GetMapping("/viewAllReviews")
     public ResponseEntity<List<ReviewDomain>> viewAllReviews() {
+        // Retrieve all reviews
         List<ReviewDomain> ratings = reviewService.viewAllReviews();
         if (ratings.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -78,8 +89,11 @@ public class ProductController {
         }
     }
 
+    // C (R) U D
+    // REST API endpoint to view reviews in a specific collection
     @GetMapping("/viewReviews/{collectionName}")
     public ResponseEntity<List<ReviewDomain>> viewReviewsInCollection(@PathVariable String collectionName) {
+        // Retrieve reviews from a specific collection
         List<ReviewDomain> reviews = reviewService.viewReviewsInCollection(collectionName);
         if (reviews.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -88,9 +102,11 @@ public class ProductController {
         }
     }
 
-    //C (R) U D
+    // C (R) U D
+    // REST API endpoint to view the latest reviews
     @GetMapping("/viewLatestReviews")
     public ResponseEntity<List<ReviewDomain>> viewLatestReviews(@RequestParam(name = "limit", defaultValue = "10") int limit) {
+        // Retrieve the latest reviews with an optional limit
         List<ReviewDomain> latestReviews = reviewService.getLatestReviews(limit);
 
         if (latestReviews.isEmpty()) {
@@ -100,9 +116,11 @@ public class ProductController {
         }
     }
 
-    //C (R) U D
+    // C (R) U D
+    // REST API endpoint to view reviews by rate code
     @GetMapping("/viewByRateCode")
     public ResponseEntity<List<ReviewDomain>> viewReviewsByRateCode(@RequestParam int rateCode) {
+        // Retrieve reviews by a specific rate code
         List<ReviewDomain> reviews = reviewService.findReviewsByRateCode(rateCode);
 
         if (reviews.isEmpty()) {
@@ -112,9 +130,11 @@ public class ProductController {
         }
     }
 
-    //(C) R U D
+    // (C) R U D
+    // REST API endpoint to add a new review
     @PostMapping("/addReview")
     public ResponseEntity<String> addReview(@RequestBody ReviewDomain newReview) {
+        // Try to add a new review
         try {
             String result = reviewService.addReview(newReview);
             return ResponseEntity.ok(result);
@@ -123,40 +143,23 @@ public class ProductController {
         }
     }
 
-    //C R (U) D
+    // C R (U) D
+    // REST API endpoint to update a review
     @PutMapping("/updateReview/{id}")
-    public ResponseEntity<ReviewDomain> updateReview(
-            @PathVariable String id,
-            @RequestBody ReviewDomain updatedRating
-    ) {
+    public ResponseEntity<ReviewDomain> updateReview(@PathVariable String id, @RequestBody ReviewDomain updatedRating) {
         return reviewService.updateReviewById(collectionName, id, updatedRating);
     }
 
-    //C R U (D)
-    //spring expression language - @authorizationServiceImpl.verifyToken(#token, #clientId, 'delete')
+    // C R U (D)
+    // REST API endpoint to delete a review with authorization
     @PreAuthorize("@authorizationServiceImpl.verifyToken(#token, #clientId, 'delete')")
-    @DeleteMapping("/deleteReview/{id}")
-    public ResponseEntity<String> deleteReview(@PathVariable String id) {
-        boolean deleted = reviewService.deleteReviewById(collectionName, id);
-        if (deleted) {
-            return ResponseEntity.ok("Deleted Rating with ID: " + id);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @DeleteMapping("/deleteReview")
+    public ResponseEntity<Object> deleteReview(@RequestHeader(name = "Authorization") String token, @RequestHeader(name = "clientId") String clientId, @RequestHeader(name = "reviewId") String reviewId) {
+        return reviewService.deleteSpecificReview(clientId, reviewId);
     }
-//change clientId
-@PreAuthorize("@authorizationServiceImpl.verifyToken(#token, #clientId, 'delete')")
-@DeleteMapping("/deleteReview")
-public ResponseEntity<String> deleteReview(@RequestHeader(name = "Authorization") String token, @RequestHeader(name = "ClientId") String clientId, @RequestHeader(name = "ReviewId") String reviewId) {
-    boolean deleted = reviewService.deleteReviewById(collectionName, reviewId);
-    if (deleted) {
-        return ResponseEntity.ok("Deleted Rating with Review ID: " + reviewId);
-    } else {
-        return ResponseEntity.notFound().build();
-    }
-}
 
-    //create a new client endpoint -- pass in client secret/secret
+    // Below are Endpoints for Client
+    // REST API endpoint to create a new client
     @PostMapping("/newClient")
     public String newClient(@RequestBody Map<String, String> request) {
         String username = request.get("username");
@@ -164,12 +167,13 @@ public ResponseEntity<String> deleteReview(@RequestHeader(name = "Authorization"
         return clientService.createNewClient(username, password);
     }
 
+    // REST API endpoint to get all clients
     @GetMapping("/viewClients")
     public List<Client> getAllClients() {
-        // Assuming your client service has a method to fetch all clients sorted by the most recent
         return clientService.findAllClients();
     }
 
+    // REST API endpoint to verify login information
     @PostMapping("/verifyLogin")
     public ResponseEntity<String> verifyLogin(@RequestBody Map<String, String> request) {
         String username = request.get("username");
@@ -181,7 +185,4 @@ public ResponseEntity<String> deleteReview(@RequestHeader(name = "Authorization"
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
         }
     }
-
-
-
 }

@@ -46,7 +46,6 @@ public class TokenServiceImpl implements TokenService {
     @Value("${update.token.collection}")
     private String updateCollection;
 
-
     @Override
     public ResponseEntity<Object> generateJWT(String tokenFunction, String clientId) {
         Optional<Client> clientOptional = clientService.findClientById(clientId);

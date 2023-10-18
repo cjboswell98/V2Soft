@@ -3,15 +3,14 @@ package com.product.rating.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-
+//implement pipe directives to angular
+//also routing concepts
+//admin login and functionality only for admin
+//implement authgod secure can activate and can deactivate
 @Document(collection = "clients")
 public class ClientModel {
 
-    //implement pipe directives to angular
-    //also routing concepts
-    //admin login and functionality only for admin
-    //implement authgod secure can activate and can deactivate
+
     @Id
     private Long clientId;
     @Field(name = "tokenSalt")

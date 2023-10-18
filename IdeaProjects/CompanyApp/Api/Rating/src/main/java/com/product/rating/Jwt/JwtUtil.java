@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// Service class for handling JWT generation, validation, and extraction
 @Service
 public class JwtUtil {
 
@@ -21,19 +22,23 @@ public class JwtUtil {
     @Value("${security.jwt.expiration}")
     private long expirationTime; // Read the expiration time from application.properties
 
+    // Method to extract the username from the JWT token
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
+    // Method to extract the expiration date from the JWT token
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
+    // Method to extract specific claims from the JWT token
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
+    // Method to extract all claims from the JWT token
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
@@ -41,10 +46,12 @@ public class JwtUtil {
                 .getBody();
     }
 
+    // Method to check if the token is expired
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
+    // Method to generate a JWT token based on user details
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         Date now = new Date();
@@ -59,6 +66,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // Method to create a token with specific claims and subject
     private String createToken(Map<String, Object> claims, String subject) {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
@@ -73,6 +81,7 @@ public class JwtUtil {
                 .compact();
     }
 
+    // Method to validate the JWT token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

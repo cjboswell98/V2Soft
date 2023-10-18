@@ -17,24 +17,31 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+// Configuration class for defining security configurations
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    // Autowired user details service
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    // Autowired JwtRequestFilter
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
+    // Autowired JwtConfig
     @Autowired
     private JwtConfig jwtConfig;
 
+    // Autowired CorsConfigurationSource for handling CORS
     @Autowired
     private CorsConfigurationSource corsConfigurationSource; // Inject the CorsConfigurationSource
 
+    // Method to configure HTTP security settings
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        // Create JwtAuthenticationFilter for handling authentication
         JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), jwtConfig);
         authenticationFilter.setFilterProcessesUrl("/login");
 
@@ -53,15 +60,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class); // If needed
     }
 
-
+    // Bean for exposing the AuthenticationManager
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
 
+    // Bean for configuring the password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return NoOpPasswordEncoder.getInstance(); // Note: This implementation should not be used in production, consider using BCryptPasswordEncoder or other secure implementations
     }
 }

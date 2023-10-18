@@ -65,5 +65,4 @@ public class JwtConfig {
         return prefix; // Return the prefix value
     }
 
-    // Getters and setters for the above properties
 }

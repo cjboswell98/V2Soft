@@ -55,10 +55,10 @@
       <textarea id="comments" name="comments" formControlName="comments" required></textarea>
   </div>
 
-  <div>
+  <!-- <div>
       <label for="dateTime">Date and Time:</label>
       <input type="datetime-local" id="dateTime" name="dateTime" formControlName="dateTime">
-  </div>
+  </div> -->
 
   <button type="submit" [disabled]="!newReviewForm.valid">Submit Review</button>
   <div *ngIf="newReviewForm.invalid && newReviewForm.dirty">

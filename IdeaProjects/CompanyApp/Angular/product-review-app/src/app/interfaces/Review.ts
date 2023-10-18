@@ -1,5 +1,6 @@
 export interface Review {
   id?: string; // MongoDB document ID (assuming it's a string)
+  reviewId: string,
   productName: string;
   firstName: string;
   lastName: string;

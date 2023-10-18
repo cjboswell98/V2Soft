@@ -12,11 +12,6 @@ public class ClientVerificationDTO {
     private String clientId;
     private String clientSecret;
 
-    public ClientVerificationDTO() {
-    }
-
-
-
     public String getClientId() {
         return clientId;
     }

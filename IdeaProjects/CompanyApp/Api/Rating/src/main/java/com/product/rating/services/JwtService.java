@@ -10,42 +10,37 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-
-@Service
+@Service // Indicates that the class is a service component
 public class JwtService {
 
-    private final PasswordEncoder passwordEncoder;
-    private final JwtTokenRepository jwtTokenRepository;
+    private final PasswordEncoder passwordEncoder; // Field to store the PasswordEncoder instance
+    private final JwtTokenRepository jwtTokenRepository; // Field to store the JwtTokenRepository instance
 
-    @Autowired
+    @Autowired // Annotation for constructor-based dependency injection
     public JwtService(JwtTokenRepository jwtTokenRepository, PasswordEncoder passwordEncoder) {
-        this.jwtTokenRepository = jwtTokenRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenRepository = jwtTokenRepository; // Initializing the JwtTokenRepository field
+        this.passwordEncoder = passwordEncoder; // Initializing the PasswordEncoder field
     }
 
+    // Method to save the JWT token to the database
     public void saveTokenToDatabase(String token) {
-        JwtToken jwtToken = new JwtToken();
-        jwtToken.setToken(token);
+        JwtToken jwtToken = new JwtToken(); // Creating a new JwtToken object
+        jwtToken.setToken(token); // Setting the token for the JwtToken
 
         // Set the expiration date to 1 minute from the current time
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, 5);
-        Date expirationDate = calendar.getTime();
-        jwtToken.setExpirationDate(expirationDate);
+        Calendar calendar = Calendar.getInstance(); // Creating a new Calendar instance
+        calendar.add(Calendar.MINUTE, 5); // Adding 5 minutes to the current time
+        Date expirationDate = calendar.getTime(); // Obtaining the expiration date
+        jwtToken.setExpirationDate(expirationDate); // Setting the expiration date for the JwtToken
 
-        jwtTokenRepository.save(jwtToken);
+        jwtTokenRepository.save(jwtToken); // Saving the JwtToken to the JwtTokenRepository
     }
 
-
-
+    // Method to retrieve a JWT token for the provided ClientModel
     public String retrieveJwt(ClientModel client) {
         // Convert the Long type to a String type
-        String clientId = String.valueOf(client.getClientId());
-        Optional<JwtToken> jwtTokenOptional = jwtTokenRepository.findById(clientId);
-        return jwtTokenOptional.map(JwtToken::getToken).orElse(null);
+        String clientId = String.valueOf(client.getClientId()); // Converting the client ID to a String
+        Optional<JwtToken> jwtTokenOptional = jwtTokenRepository.findById(clientId); // Fetching the JwtToken by ID
+        return jwtTokenOptional.map(JwtToken::getToken).orElse(null); // Returning the token if present, or null otherwise
     }
-
-
-
-
 }

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+
 @Service
 public class ReviewService {
 
@@ -42,7 +43,6 @@ public class ReviewService {
 
     @Value("${customlog.messageformat}")
     private String customLogMessageFormat; // Inject the custom log message format
-
 
     public void createCollection(String collectionName) {
         try {
@@ -91,7 +91,6 @@ public class ReviewService {
         }
     }
 
-
     private int reviewCounter = 1; // Initialize the counter
 
     public String addReview(ReviewDomain newReview) {
@@ -100,29 +99,24 @@ public class ReviewService {
             List<ReviewDomain> reviews = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "reviewId"));
 
             if (!clients.isEmpty()) {
-                String clientId = clients.get(0).getClientId(); // Fetch the most recent client ID
+                String clientId = clients.get(0).getClientId();
                 newReview.setClientId(clientId);
             } else {
                 System.out.println("No clients found. Setting clientId for the first review.");
-                // You can handle this case as needed. You might want to throw an exception or log an error.
             }
 
             if (!reviews.isEmpty()) {
                 int lastReviewId = Integer.parseInt(reviews.get(0).getReviewId());
-                reviewCounter = lastReviewId + 1;
+                reviewCounter = Math.max(reviewCounter, lastReviewId + 1);
             } else {
-                System.out.println("Reviews list is empty.");
-                reviewCounter = 1; // Reset the review counter to 1 if the list is empty
+                System.out.println("Reviews list is empty. Resetting counter to 1.");
+                reviewCounter = 1; // Reset the counter to 1
             }
 
-            // Increment the reviewId counter
             newReview.setReviewId(String.valueOf(reviewCounter));
-
-            // Any additional logic or validation before adding the review can be added here
-
-            // Assuming you have the necessary repository injected
-            // Add the new review to the collection
             reviewRepository.save(newReview);
+
+            reviewCounter++; // Increment the counter
 
             return "Review added successfully with reviewId: " + newReview.getReviewId();
         } catch (Exception e) {
@@ -130,24 +124,20 @@ public class ReviewService {
         }
     }
 
+    public ResponseEntity<Object> deleteSpecificReview(String clientId, String reviewId) {
+        logger.info("Attempting to delete review with id: " + reviewId);
 
+        // Add logic to verify the clientId if needed
 
-    public boolean deleteReviewById(String collectionName, String reviewId) {
-        try {
-            // Deleting from the first collection
-            Query ratingQuery = new Query(Criteria.where("_id").is(reviewId)); // Change the field to "_id"
-            ReviewDomain existingRating = mongoTemplate.findOne(ratingQuery, ReviewDomain.class, collectionName);
+        // Check and delete the record by reviewId
+        long deletedCount = reviewRepository.deleteByReviewId(reviewId);
 
-            if (existingRating != null) {
-                mongoTemplate.remove(existingRating, collectionName);
-            }
-
-            // No need to delete from the second collection based on reviewId
-
-            return true;
-        } catch (Exception e) {
-            lowReviewsLogger.error("Error deleting data by ID: {}", e.getMessage());
-            return false;
+        if (deletedCount > 0) {
+            logger.info("Review deleted");
+            return ResponseEntity.ok("Review with ID " + reviewId + " has been deleted successfully");
+        } else {
+            logger.debug("No review found with provided id: " + reviewId);
+            return new ResponseEntity<>("Unable to find a review with the provided ID. Please try again.", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -209,7 +199,5 @@ public class ReviewService {
         Query query = new Query(Criteria.where("rateCode").is(rateCode));
         return mongoTemplate.find(query, ReviewDomain.class, collectionName); // Use the injected collection name
     }
-
-
 }
 

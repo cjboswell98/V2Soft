@@ -37,7 +37,6 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         this.clientService = clientService;
     }
 
-
     @Override
     public boolean verifyToken(String token, String clientId, String tokenFunction) {
         infoAndDebuglogger.info("Reached the verifyToken Method");

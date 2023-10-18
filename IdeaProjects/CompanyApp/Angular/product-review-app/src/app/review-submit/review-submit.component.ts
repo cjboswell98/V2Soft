@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class ReviewSubmitComponent implements OnInit {
   newReview: Review = {
+    reviewId: '',
     productName: '',
     firstName: '',
     lastName: '',
