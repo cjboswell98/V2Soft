@@ -199,5 +199,7 @@ public class ReviewService {
         Query query = new Query(Criteria.where("rateCode").is(rateCode));
         return mongoTemplate.find(query, ReviewDomain.class, collectionName); // Use the injected collection name
     }
+
+
 }
 

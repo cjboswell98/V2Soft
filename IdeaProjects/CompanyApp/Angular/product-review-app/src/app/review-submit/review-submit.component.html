@@ -51,9 +51,16 @@
   </div>
 
   <div>
-      <label for="comments">Comments:</label>
-      <textarea id="comments" name="comments" formControlName="comments" required></textarea>
-  </div>
+    <label for="comments">Comments:</label>
+    <textarea id="comments" name="comments" formControlName="comments" required
+              (input)="onCommentsChange($event)"></textarea>
+    <div class="comment-counter" *ngIf="newReview.comments.length > 0">
+        Characters left: {{ 500 - newReview.comments.length }}/500
+    </div>
+</div>
+
+
+
 
   <!-- <div>
       <label for="dateTime">Date and Time:</label>
