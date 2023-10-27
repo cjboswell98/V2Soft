@@ -1,17 +1,9 @@
 package com.product.rating.model;
 
-public class AuthenticationRequest {
+public class JwtRequest {
 
     private String username;
     private String password;
-
-    public AuthenticationRequest() {
-    }
-
-    public AuthenticationRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
 
     public String getUsername() {
         return username;

@@ -33,7 +33,7 @@ export class RegisterComponent {
       username: this.username,
       password: this.password
     };
-
+  
     // Check if the username already exists
     if (this.isUsernameExists(this.username)) {
       console.error('Username already exists. Please choose a different username.');
@@ -41,29 +41,36 @@ export class RegisterComponent {
     } else {
       // If the username is unique, proceed with the registration
       this.registerUser(body);
+  
     }
   }
+  
+
+  isUsernameAdmin(username: string): boolean {
+    return username === 'admin';
+  }  
 
   isUsernameExists(username: string): boolean {
     return this.clients.some(client => client.username === username);
   }
 
   registerUser(body: any) {
-    // Remove the previously stored first name and last name from local storage
-    localStorage.removeItem('firstName');
-    localStorage.removeItem('lastName');
-
     // Make the registration request
     this.http.post('http://localhost:8080/reviews/newClient', body, { responseType: 'text' }).subscribe(
       (response) => {
         if (response === 'Client successfully created') {
           console.log('Registration successful', response); // Log the success response
-
+  
           // Save the first name and last name to local storage
           localStorage.setItem('firstName', this.firstName);
           localStorage.setItem('lastName', this.lastName);
-
-          this.router.navigate(['/login']); // Redirect to the login page after successful registration
+  
+          if (localStorage.getItem("firstName") === "admin") {
+            this.router.navigate(['/admin-review-list']);
+          } else {
+            // Redirect to another route if not "admin"
+            this.router.navigate(['/home']);
+          }
         } else {
           console.error('Registration failed:', response);
           // Handle registration failure here, such as displaying an error message
@@ -74,4 +81,4 @@ export class RegisterComponent {
       }
     );
   }
-}
+}  

@@ -12,7 +12,4 @@ public interface ClientService {
 
     Optional<Client> findClientById(String id);
 
-    String hashClientSecret(String password);
-
-    boolean verifyLoginInformation(String username, String password);
 }

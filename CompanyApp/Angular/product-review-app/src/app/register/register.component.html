@@ -1,23 +1,36 @@
-<p> </p>
-<h2>Register</h2>
-
-<form (ngSubmit)="onSubmit()">
-    <div>
-        <label for="username">First Name:</label>
-        <input type="text" id="firstName" name="firstName" [(ngModel)]="firstName">
-    </div>
-    <div>
-        <label for="username">Last Name:</label>
-        <input type="text" id="lastName" name="lastName" [(ngModel)]="lastName">
-    </div>
-    <div>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" [(ngModel)]="username">
-        <p *ngIf="isUsernameExists(username)" style="color: red">Username already exists. Please choose a different username.</p>
-    </div>
-    <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" [(ngModel)]="password">
-    </div>
-    <button type="submit">Register</button>
-</form>
+<mat-toolbar color="primary">
+    <span>
+      Product Review Application
+    </span>
+    <span class="space-buttons"></span>
+    <button mat-raised-button routerLink="/login" color="primary">
+      Login
+    </button>
+  </mat-toolbar>
+  <p></p>
+  <h2>Register</h2>
+  <form (ngSubmit)="onSubmit()" autocomplete="on">
+    <mat-form-field appearance="outline">
+      <mat-label>First Name</mat-label>
+      
+      <input matInput [(ngModel)]="firstName" name="firstName" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Last Name</mat-label>
+      
+      <input matInput [(ngModel)]="lastName" name="lastName" required>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      
+      <input matInput [(ngModel)]="username" name="username" required>
+      <div *ngIf="isUsernameExists(username)" style="color: red">already exists. Please choose a different username.</div>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      
+      <input matInput type="password" [(ngModel)]="password" name="password" required>
+    </mat-form-field>
+    <button type="submit" mat-raised-button color="primary">Register</button>
+  </form>
+  

@@ -1,0 +1,80 @@
+.mat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  mat-toolbar {
+    .mat-raised-button {
+      color: white; /* Text color */
+      background-color: red; /* Background color */
+    }
+  }
+  
+  
+  .space-buttons {
+    flex: 1; /* This will push the button to the right */
+    text-align: right; /* Aligns the button's text to the right */
+    color: yellow;
+  }
+  
+  .sorting-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .sorting-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch; /* Horizontally center-align items */
+    
+    width: 100%; /* Stretch the container vertically */
+  }
+
+  .sorting-options-filter {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch; /* Horizontally center-align items */
+    
+    width: 100%; /* Stretch the container vertically */
+  }
+  
+
+  .review-list {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+    .mat-elevation-z2 {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  
+    th, td {
+      border: 1px solid whitesmoke;
+      padding: 8px;
+      text-align: left;
+    }
+  
+    th {
+      background-color: whitesmoke;
+    }
+  }
+  

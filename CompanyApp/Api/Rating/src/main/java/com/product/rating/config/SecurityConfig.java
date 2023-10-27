@@ -1,6 +1,8 @@
-package com.product.rating.Jwt;
+package com.product.rating.config;
 
-import com.product.rating.services.MyUserDetailsService;
+
+import com.product.rating.security.JwtRequestFilter;
+import com.product.rating.services.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,15 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Autowired user details service
     @Autowired
-    private MyUserDetailsService myUserDetailsService;
+    private JwtService jwtService;
 
     // Autowired JwtRequestFilter
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     // Autowired JwtConfig
-    @Autowired
-    private JwtConfig jwtConfig;
 
     // Autowired CorsConfigurationSource for handling CORS
     @Autowired
@@ -42,8 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Create JwtAuthenticationFilter for handling authentication
-        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), jwtConfig);
-        authenticationFilter.setFilterProcessesUrl("/login");
 
         http.cors().configurationSource(corsConfigurationSource) // Set the CorsConfigurationSource
                 .and()
@@ -57,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add this line
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class); // If needed
+                ; // If needed
     }
 
     // Bean for exposing the AuthenticationManager

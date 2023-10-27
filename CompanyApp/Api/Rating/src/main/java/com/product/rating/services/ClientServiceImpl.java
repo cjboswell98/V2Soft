@@ -1,17 +1,18 @@
 package com.product.rating.services;
 
 import com.product.rating.domain.Client;
+import com.product.rating.domain.Role;
 import com.product.rating.repository.ClientRepository;
+import com.product.rating.repository.RoleRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 // Service class responsible for handling Client operations
 @Service
@@ -21,7 +22,46 @@ public class ClientServiceImpl implements ClientService {
     private static final Logger infoAndDebuglogger = LogManager.getLogger("InfoAndDebugLogger");
 
     // Dependency injection of the ClientRepository
+    @Autowired
     private final ClientRepository clientRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    public void initRolesAndUser() {
+        Role adminRole = new Role();
+        adminRole.setRoleName("Admin");
+        adminRole.setRoleDescription("Admin role");
+        roleRepository.save(adminRole);
+
+        Role clientRole = new Role();
+        clientRole.setRoleName("Client");
+        clientRole.setRoleDescription("Default role for new client");
+        roleRepository.save(clientRole);
+
+        Client adminUser = new Client();
+        adminUser.setFirstName("admin");
+        adminUser.setLastName("admin");
+        adminUser.setUserName("admin123");
+        adminUser.setPassword("admin");
+        Set<Role> adminRoles = new HashSet<>();
+        adminRoles.add(adminRole);
+        adminUser.setRole(adminRoles);
+        clientRepository.save(adminUser);
+
+//        Client client = new Client();
+//        client.setFirstName("Cedric");
+//        client.setLastName("Boswell");
+//        client.setUserName("cjbos123");
+//        client.setPassword("pass");
+//        Set<Role> clientRoles = new HashSet<>();
+//        clientRoles.add(clientRole);
+//        client.setRole(clientRoles);
+//        clientRepository.save(client);
+    }
 
     // Constructor to inject the ClientRepository dependency
     public ClientServiceImpl(ClientRepository clientRepository) {
@@ -50,24 +90,24 @@ public class ClientServiceImpl implements ClientService {
 
 
     // Method to verify login information based on the provided username and password
-    @Override
-    public boolean verifyLoginInformation(String username, String password) {
-        Optional<Client> clientOptional = clientRepository.findByUsername(username); // Retrieving the client based on the username from the repository
-
-        if (clientOptional.isPresent()) { // Checking if the client is present
-            Client client = clientOptional.get(); // Extracting the client from the Optional
-
-            // Verify if the provided password matches the hashed password in the database
-            PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
-            String hashedPassword = client.getPassword(); // Retrieving the hashed password from the client
-
-            return encoder.matches(password, hashedPassword); // Returning the result of password comparison
-        } else {
-            // Log the failure to find the client with the provided username
-            infoAndDebuglogger.debug("No client found with the username: " + username); // Logging the failure to find the client
-            return false; // Returning false to indicate the failure
-        }
-    }
+//    @Override
+//    public boolean verifyLoginInformation(String username, String password) {
+//        Optional<Client> clientOptional = clientRepository.findByUsername(username); // Retrieving the client based on the username from the repository
+//
+//        if (clientOptional.isPresent()) { // Checking if the client is present
+//            Client client = clientOptional.get(); // Extracting the client from the Optional
+//
+//            // Verify if the provided password matches the hashed password in the database
+//            PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
+//            String hashedPassword = client.getPassword(); // Retrieving the hashed password from the client
+//
+//            return encoder.matches(password, hashedPassword); // Returning the result of password comparison
+//        } else {
+//            // Log the failure to find the client with the provided username
+//            infoAndDebuglogger.debug("No client found with the username: " + username); // Logging the failure to find the client
+//            return false; // Returning false to indicate the failure
+//        }
+//    }
 
     // Method to find a client based on the provided ID
     @Override
@@ -82,9 +122,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     // Method to hash a client's secret password
-    @Override
-    public String hashClientSecret(String password) {
-        PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
-        return encoder.encode(password); // Returning the hashed password
+    public String getEncodedPassword(String password) {
+        return passwordEncoder.encode(password);
     }
 }

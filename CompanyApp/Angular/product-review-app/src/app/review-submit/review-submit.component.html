@@ -1,61 +1,68 @@
+<mat-toolbar color="primary">
+    <span>
+      Product Review Application
+    </span>
+
+    <button mat-icon-button color="warn" routerLink="/home" >
+        <mat-icon>home</mat-icon>
+      </button>
+  
+    <span class="space-buttons"></span>
+    <button mat-raised-button routerLink="/login" color="">
+      Logout
+    </button>
+    
+  </mat-toolbar>
 <p> </p>
-<li class="nav-item"><a routerLink="/review-list">Reviews</a></li>
-<form (ngSubmit)="submitReview()" [formGroup]="newReviewForm">
-  <h2>Add Review</h2>
-  <div>
-      <label for="productName">Product Name:</label>
-      <select id="productName" name="productName" formControlName="productName" required>
-          <option value="iConnectX">iConnectX</option>
-          <option value="EmployMe">EmployMe</option>
-          <option value="WeInvite">WeInvite</option>
-          <option value="CompanyTRAK">CompanyTRAK</option>
-      </select>
-  </div>
-
-
+<li class="sorting-button">
+    <button mat-raised-button routerLink="/review-list" color="primary">Reviews</button>
+  </li>
   
 
-  <div>
-      <label for="zipCode">Zip Code:</label>
-      <input type="text" id="zipCode" name="zipCode" formControlName="zipCode">
-      <div *ngIf="newReviewForm.get('zipCode')?.hasError('required') && newReviewForm.get('zipCode')?.touched">
-          Zip code is required.
-      </div>
-      <div *ngIf="newReviewForm.get('zipCode')?.hasError('invalidZipCode') && newReviewForm.get('zipCode')?.touched">
-          Zip code must be 5 or 9 digits.
-      </div>
-  </div>
-
-  <div>
-      <label for="rateCode">Rate Code:</label>
-      <select id="rateCode" name="rateCode" formControlName="rateCode" required>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-      </select>
-  </div>
-
-  <div>
-    <label for="comments">Comments:</label>
-    <textarea id="comments" name="comments" formControlName="comments" required
-              (input)="onCommentsChange($event)"></textarea>
-    <div class="comment-counter" *ngIf="newReview.comments.length > 0">
+<form (ngSubmit)="submitReview()" [formGroup]="newReviewForm">
+    <h2>Add Review</h2>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Product Name</mat-label>
+      <mat-select formControlName="productName" required>
+        <mat-option value="iConnectX">iConnectX</mat-option>
+        <mat-option value="EmployMe">EmployMe</mat-option>
+        <mat-option value="WeInvite">WeInvite</mat-option>
+        <mat-option value="CompanyTRAK">CompanyTRAK</mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Zip Code</mat-label>
+      <input matInput type="text" id="zipCode" name="zipCode" formControlName="zipCode">
+      <mat-error *ngIf="newReviewForm.get('zipCode')?.hasError('required') && newReviewForm.get('zipCode')?.touched">
+        Zip code is required.
+      </mat-error>
+      <mat-error *ngIf="newReviewForm.get('zipCode')?.hasError('invalidZipCode') && newReviewForm.get('zipCode')?.touched">
+        Zip code must be 5 or 9 digits.
+      </mat-error>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Rate Code</mat-label>
+      <mat-select formControlName="rateCode" required>
+        <mat-option value="1">1</mat-option>
+        <mat-option value="2">2</mat-option>
+        <mat-option value="3">3</mat-option>
+        <mat-option value="4">4</mat-option>
+        <mat-option value="5">5</mat-option>
+      </mat-select>
+    </mat-form-field>
+  
+    <mat-form-field appearance="fill">
+      <mat-label>Comments</mat-label>
+      <textarea matInput id="comments" name="comments" formControlName="comments" required (input)="onCommentsChange($event)"></textarea>
+      <div class="comment-counter" *ngIf="newReview.comments.length > 0">
         Characters left: {{ 500 - newReview.comments.length }}/500
-    </div>
-</div>
-
-
-
-
-  <!-- <div>
-      <label for="dateTime">Date and Time:</label>
-      <input type="datetime-local" id="dateTime" name="dateTime" formControlName="dateTime">
-  </div> -->
-
-  <button type="submit" [disabled]="!newReviewForm.valid">Submit Review</button>
-  <div *ngIf="newReviewForm.invalid && newReviewForm.dirty">
-      Please fill out all fields.
-  </div>
-</form>
+      </div>
+    </mat-form-field>
+  
+    <button mat-raised-button type="submit" [disabled]="!newReviewForm.valid">Submit Review</button>
+    <mat-error *ngIf="newReviewForm.invalid && newReviewForm.dirty">Please fill out all fields.</mat-error>
+  </form>
+  

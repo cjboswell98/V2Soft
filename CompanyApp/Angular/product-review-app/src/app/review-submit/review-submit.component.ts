@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./review-submit.component.scss']  // Specifies the style files for the component
 })
 export class ReviewSubmitComponent implements OnInit {  // Definition of the ReviewSubmitComponent class which implements OnInit interface
+  reviews: Review[] = [];
 
   newReview: Review = {  // Object of type Review for holding the new review data
     reviewId: '',  // Initialize the reviewId to an empty string
@@ -55,8 +56,9 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   submitReview(): void {
     if (this.newReviewForm.valid) {
       const currentDate = new Date();
-      this.newReviewForm.patchValue({ dateTime: currentDate.toString() });
-  
+      const formattedDate = currentDate.toLocaleString();
+
+      this.newReviewForm.patchValue({ dateTime: formattedDate });
       // Retrieve the first name and last name from local storage
       const storedFirstName = localStorage.getItem('firstName');
       const storedLastName = localStorage.getItem('lastName');
@@ -88,10 +90,16 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
           console.error('Error submitting review:', error);
         }
       );
+      this.loadReviews();
       this.router.navigate(['/review-list']);
     }
   }
   
+  loadReviews(): void {
+    this.reviewApiService.getAllReviews().subscribe((data: Review[]) => {
+      this.reviews = data;
+    });
+  }
 
   onCommentsChange(event: any): void {
     const target = event.target as HTMLTextAreaElement;

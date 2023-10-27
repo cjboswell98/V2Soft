@@ -106,14 +106,14 @@ public class ReviewService {
             }
 
             if (!reviews.isEmpty()) {
-                int lastReviewId = Integer.parseInt(reviews.get(0).getReviewId());
+                int lastReviewId = newReview.getReviewId();;
                 reviewCounter = Math.max(reviewCounter, lastReviewId + 1);
             } else {
                 System.out.println("Reviews list is empty. Resetting counter to 1.");
                 reviewCounter = 1; // Reset the counter to 1
             }
 
-            newReview.setReviewId(String.valueOf(reviewCounter));
+            newReview.setReviewId(reviewCounter);
             reviewRepository.save(newReview);
 
             reviewCounter++; // Increment the counter
@@ -124,21 +124,10 @@ public class ReviewService {
         }
     }
 
-    public ResponseEntity<Object> deleteSpecificReview(String clientId, String reviewId) {
+    public void deleteSpecificReview(Integer reviewId) {
         logger.info("Attempting to delete review with id: " + reviewId);
+        reviewRepository.deleteByReviewId(reviewId);
 
-        // Add logic to verify the clientId if needed
-
-        // Check and delete the record by reviewId
-        long deletedCount = reviewRepository.deleteByReviewId(reviewId);
-
-        if (deletedCount > 0) {
-            logger.info("Review deleted");
-            return ResponseEntity.ok("Review with ID " + reviewId + " has been deleted successfully");
-        } else {
-            logger.debug("No review found with provided id: " + reviewId);
-            return new ResponseEntity<>("Unable to find a review with the provided ID. Please try again.", HttpStatus.NOT_FOUND);
-        }
     }
 
     public ResponseEntity<ReviewDomain> updateReviewById(String collectionName, String id, ReviewDomain updatedReview) {

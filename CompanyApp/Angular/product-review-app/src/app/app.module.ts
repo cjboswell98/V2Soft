@@ -11,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';  
@@ -18,13 +19,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
-
-
+import { AdminReviewListComponent } from './admin-review-list/admin-review-list.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [  // Defining an array of route configurations
-  { path: '', redirectTo: 'review-list', pathMatch: 'full' },  // Redirecting the empty path to the 'review-list' path
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'home', component: HomeComponent },  // Redirecting the empty path to the 'review-list' path
   { path: 'review-list', component: ReviewListComponent },  // Configuring the 'review-list' path to use the ReviewListComponent
+  { path: 'admin-review-list', component: AdminReviewListComponent },
   { path: 'review-submit', component: ReviewSubmitComponent },  // Configuring the 'review-submit' path to use the ReviewSubmitComponent
   { path: 'register', component: RegisterComponent },  // Configuring the 'register' path to use the RegisterComponent
   { path: 'login', component: LoginComponent },  // Configuring the 'login' path to use the LoginComponent
@@ -34,10 +36,12 @@ const routes: Routes = [  // Defining an array of route configurations
 @NgModule({
   declarations: [  // Array of components declared in this module
     AppComponent,  // The main application component
-    ReviewListComponent,  // The component for the review list
+    ReviewListComponent,
+    HomeComponent,
+    AdminReviewListComponent,  // The component for the review list
     ReviewSubmitComponent,  // The component for submitting reviews
     LoginComponent,  // The component for user login
-    RegisterComponent,  // The component for user registration
+    RegisterComponent, HomeComponent,  // The component for user registration
   ],
   imports: [  // Array of modules this module depends on
     BrowserModule,  // The browser module for use in the browser
@@ -46,7 +50,7 @@ const routes: Routes = [  // Defining an array of route configurations
     ReactiveFormsModule,  // The module for reactive forms in the application
     RouterModule.forRoot(routes),  // The module for managing application routes
     BrowserAnimationsModule,  // The module for providing support for animations
-    MatToolbarModule, MatIconModule, MatButtonModule, MatInputModule, MatCardModule, MatTableModule, MatSortModule, MatPaginatorModule // Angular Material modules for various UI components
+    MatToolbarModule, MatIconModule, MatButtonModule, MatSelectModule,MatInputModule, MatCardModule, MatTableModule, MatSortModule, MatPaginatorModule // Angular Material modules for various UI components
   ],
   exports: [RouterModule, MatToolbarModule, MatIconModule, MatButtonModule, MatInputModule, MatCardModule],  // Array of modules to export from this module
   providers: [],  // Array of services provided by this module

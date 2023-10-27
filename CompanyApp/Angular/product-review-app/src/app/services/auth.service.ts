@@ -1,33 +1,34 @@
-// import { Injectable } from '@angular/core';
-// import { HttpClient, HttpHeaders } from '@angular/common/http';
-// import { Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-//   private apiUrl = 'http://localhost:4200/review-list';
-//   private token: string;
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+    constructor() {}
 
-//   constructor(private http: HttpClient) {}
+    public setRoles(roles: []) {
+        localStorage.setItem('roles', JSON.stringify(roles));
+    }
 
-//   login(username: string, password: string): Observable<any> {
-//     const body = { username, password };
-//     return this.http.post(`${this.apiUrl}/login`, body);
-//   }
+    // public getRoles(): [] {
+    //     return JSON.parse(localStorage.getItem('roles'));
+    // }
 
-//   setToken(token: string) {
-//     this.token = token;
-//     localStorage.setItem('jwtToken', token);
-//   }
+    setToken(jwtToken: string) {
+        localStorage.setItem('jwtToken', jwtToken);
+    }
 
-//   getToken(): string {
-//     return this.token || localStorage.getItem('jwtToken');
-//   }
+    getToken() {
+        return localStorage.getItem('jwtToken');
+    }
 
-//   getHeaders(): HttpHeaders {
-//     return new HttpHeaders({
-//       Authorization: `Bearer ${this.getToken()}`
-//     });
-//   }
-// }
+    public clear() {
+        localStorage.clear();
+    }
+
+    // public isLoggedIn() {
+    //     return this.getRoles() && this.getToken();
+    // }
+}

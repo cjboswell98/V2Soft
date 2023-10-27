@@ -1,4 +1,4 @@
-package com.product.rating.Jwt;
+package com.product.rating.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,4 +26,3 @@ public class CorsConfig {
         return source; // Return the configured CORS configuration source
     }
 }
-

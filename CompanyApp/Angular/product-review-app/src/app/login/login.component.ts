@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Client } from '../interfaces/Client';
 
 @Component({
   selector: 'app-login',
@@ -9,6 +10,9 @@ import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+  clients: Client[] = [];
+  firstName: string = '';
+  lastName: string = '';
   username: string = "";
   password: string = "";
   newReviewForm: FormGroup = new FormGroup({});
@@ -33,19 +37,52 @@ export class LoginComponent {
       (response) => {
         if (response === 'Login successful') {
           console.log('Login successful', response);
-          this.loginSuccess = true; // Set loginSuccess to true on successful login
-          this.router.navigate(['/review-list']);
+
+           // Clear the local storage for firstName and lastName
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
+
+          this.router.navigate(['/home']);
+
+          // Fetch the first name and last name using the username
+          this.fetchFirstNameAndLastName(this.username);
         } else {
           console.error('Authentication failed:', response);
-          this.loginSuccess = false; // Set loginSuccess to false on failed login
+          // Handle authentication failure
         }
       },
       (error) => {
         console.error('Error:', error);
-        this.loginSuccess = false; // Set loginSuccess to false if an error occurs
+        // Handle error
       }
     );
-  }    
+  }
+
+  fetchFirstNameAndLastName(username: string) {
+    this.http.get<Client[]>(`http://localhost:8080/reviews/viewClients`).subscribe(
+      (clients) => {
+        const matchingClient = clients.find(client => client.username === username);
+        if (matchingClient) {
+          // Save the first name and last name to local storage
+          localStorage.setItem('firstName', matchingClient.firstName);
+          localStorage.setItem('lastName', matchingClient.lastName);
+        } else {
+          // Handle the case where no matching client was found
+          console.error('No matching client found for username: ', username);
+          // You can optionally clear the previous values from local storage here.
+          localStorage.removeItem('firstName');
+          localStorage.removeItem('lastName');
+        }
+      },
+      (error) => {
+        console.error('Failed to fetch client data:', error);
+        // Handle error
+      }
+    );
+  }
+  
+  
+
 
   // Validation functions for username and password
   validateUsername(): ValidatorFn {

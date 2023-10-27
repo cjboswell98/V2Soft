@@ -2,10 +2,9 @@
 package com.product.rating.controller;
 
 // Import necessary classes and packages
-import com.product.rating.Jwt.JwtUtil;
 import com.product.rating.model.*;
+import com.product.rating.security.JwtUtil;
 import com.product.rating.services.JwtService;
-import com.product.rating.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,33 +23,33 @@ public class JwtController {
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private MyUserDetailsService userDetailsService;
+    private JwtService jwtService;
     @Autowired
-    private JwtUtil jwtTokenUtil;
+    private JwtUtil jwtUtil;
     @Autowired
     private JwtService jwtUtilService;
 
     // Define a request mapping for the authentication endpoint
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     // Method for creating authentication with request body as input
-    public ResponseEntity<?> createAuthentication(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<?> createAuthentication(@RequestBody JwtRequest jwtRequest) throws Exception {
         try {
             // Attempt to authenticate the user using the provided credentials
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(jwtRequest.getUsername(), jwtRequest.getPassword()));
         } catch (BadCredentialsException e) {
             // Throw an exception if the credentials are invalid
             throw new Exception("Incorrect username or password", e);
         }
         // Retrieve user details for the authenticated user
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+        final UserDetails userDetails = jwtService.loadUserByUsername(jwtRequest.getUsername());
 
         // Generate a JSON Web Token for the authenticated user
-        final String jwt = jwtTokenUtil.generateToken(userDetails);
+        final String jwt = jwtUtil.generateToken(userDetails);
 
         // Save the generated token to the database using JwtUtilService
         jwtUtilService.saveTokenToDatabase(jwt);
 
         // Return the JWT token as part of the response
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new JwtResponse(jwt));
     }
 }

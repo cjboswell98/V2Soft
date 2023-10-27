@@ -1,4 +1,4 @@
-package com.product.rating.services;
+package com.product.rating.services.dtosConverters;
 
 import com.product.rating.domain.ReviewDomain;
 import org.springframework.data.annotation.Id;
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ReviewDomainDTO {
     @Id
-    private String reviewId;
+    private Integer reviewId;
     private String clientId;
     private String productName;
     private String firstName;
@@ -34,11 +34,11 @@ public class ReviewDomainDTO {
     }
     // ID
 
-    public String getReviewId() {
+    public Integer getReviewId() {
         return reviewId;
     }
 
-    public void setReviewId(String reviewId) {
+    public void setReviewId(Integer reviewId) {
         this.reviewId = reviewId;
     }
 

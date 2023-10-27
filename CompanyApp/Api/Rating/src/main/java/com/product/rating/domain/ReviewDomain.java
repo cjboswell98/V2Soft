@@ -10,7 +10,7 @@ import java.util.List;
 public class ReviewDomain {
 
     private String clientId;
-    private String reviewId;
+    private Integer reviewId;
     private String productName;
     private String firstName;
     private String lastName;
@@ -26,7 +26,7 @@ public class ReviewDomain {
     public ReviewDomain() {
     }
 
-    public ReviewDomain(String reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+    public ReviewDomain(Integer reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
         this.reviewId = reviewId;
         this.clientId = clientId;
         this.productName = productName;
@@ -38,17 +38,20 @@ public class ReviewDomain {
         this.dateTime = dateTime;
     }
 
+    public ReviewDomain(String clientId, int reviewId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+    }
+
 
     public void setHistoryList(List<ReviewDomain> historyList) {
         this.historyList.clear();
         this.historyList.addAll(historyList);
     }
 
-    public String getReviewId() {
+    public Integer getReviewId() {
         return reviewId;
     }
 
-    public void setReviewId(String reviewId) {
+    public void setReviewId(Integer reviewId) {
         this.reviewId = reviewId;
     }
 
