@@ -1,8 +1,7 @@
-package com.product.rating.security;
+package com.product.rating.Jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.product.rating.services.JwtService;
-
+import com.product.rating.services.MyUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +24,7 @@ import java.util.Map;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JwtService jwtService;
+    private MyUserDetailsService userDetailsService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -63,7 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // If the username is not null and the context has no authentication details
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.jwtService.loadUserByUsername(username);
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 // Create a UsernamePasswordAuthenticationToken for the user's details
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

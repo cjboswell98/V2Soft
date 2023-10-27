@@ -1,32 +1,29 @@
 package com.product.rating.domain;
 
-import com.product.rating.domain.Role;
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Set;
-
-@Document(collection = "clients")
+@Data
+@Document("clients")
 public class Client {
 
     @Id
-    private String clientId;
-    private String firstName;
-    private String lastName;
-    private String userName;
-    private String userPassword;
-
-    private Set<Role> role;
+    String clientId;
+    String firstName;
+    String lastName;
+    String username;
+    String password;
 
     public Client() {
     }
 
-    public Client(String clientId, String firstName, String lastName, String userName, String userPassword) {
+    public Client(String clientId, String firstName, String lastName, String username, String password) {
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
-        this.userPassword = userPassword;
+        this.username = username;
+        this.password = password;
     }
 
     public String getClientId() {
@@ -54,26 +51,18 @@ public class Client {
     }
 
     public String getUsername() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
-        return userPassword;
+        return password;
     }
 
-    public void setPassword(String userPassword) {
-        this.userPassword = userPassword;
-    }
-
-    public Set<Role> getRole() {
-        return role;
-    }
-
-    public void setRole(Set<Role> role) {
-        this.role = role;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

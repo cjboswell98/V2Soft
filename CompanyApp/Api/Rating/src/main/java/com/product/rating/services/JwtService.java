@@ -1,75 +1,25 @@
 package com.product.rating.services;
 
-import com.product.rating.security.JwtUtil;
-import com.product.rating.domain.Client;
-import com.product.rating.model.JwtRequest;
-import com.product.rating.model.JwtResponse;
+import com.product.rating.model.ClientModel;
 import com.product.rating.model.JwtToken;
-import com.product.rating.repository.ClientRepository;
 import com.product.rating.repository.JwtTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
 @Service // Indicates that the class is a service component
-public class JwtService implements UserDetailsService {
+public class JwtService {
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private ClientRepository clientRepository;
-
-    @Autowired
+    private final PasswordEncoder passwordEncoder; // Field to store the PasswordEncoder instance
     private final JwtTokenRepository jwtTokenRepository; // Field to store the JwtTokenRepository instance
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
     @Autowired // Annotation for constructor-based dependency injection
-    public JwtService(JwtTokenRepository jwtTokenRepository) {
+    public JwtService(JwtTokenRepository jwtTokenRepository, PasswordEncoder passwordEncoder) {
         this.jwtTokenRepository = jwtTokenRepository; // Initializing the JwtTokenRepository field
-
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Client client = clientRepository.findById(username).get();
-
-        if (client != null) {
-            return new User(
-                    client.getUsername(),
-                    client.getPassword(),
-                    getAuthorities(client)
-            );
-        } else {
-            throw new UsernameNotFoundException("Username is not valid");
-        }
-    }
-
-    // Method to create a token with specific claims and subject
-    public JwtResponse createJwtToken(JwtRequest jwtRequest) throws Exception {
-        String username = jwtRequest.getUsername();
-        String password = jwtRequest.getPassword();
-        authenticate(username,password);
-
-        final UserDetails userDetails = loadUserByUsername(username);
-
-        String newGeneratedToken = jwtUtil.generateToken(userDetails);
-
-        Client client = clientRepository.findById(username).get();
-
-        return new JwtResponse(newGeneratedToken);
+        this.passwordEncoder = passwordEncoder; // Initializing the PasswordEncoder field
     }
 
     // Method to save the JWT token to the database
@@ -87,23 +37,10 @@ public class JwtService implements UserDetailsService {
     }
 
     // Method to retrieve a JWT token for the provided ClientModel
-    public void authenticate(String username, String password) throws Exception {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("User is disabled");
-        } catch (BadCredentialsException e) {
-            throw new Exception("Bad credentials from user");
-        }
-    }
-
-    private Set getAuthorities(Client client) {
-        Set authorities = new HashSet();
-
-        client.getRole().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
-        });
-
-        return authorities;
+    public String retrieveJwt(ClientModel client) {
+        // Convert the Long type to a String type
+        String clientId = String.valueOf(client.getClientId()); // Converting the client ID to a String
+        Optional<JwtToken> jwtTokenOptional = jwtTokenRepository.findById(clientId); // Fetching the JwtToken by ID
+        return jwtTokenOptional.map(JwtToken::getToken).orElse(null); // Returning the token if present, or null otherwise
     }
 }

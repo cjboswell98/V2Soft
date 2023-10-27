@@ -106,7 +106,7 @@ public class ReviewService {
             }
 
             if (!reviews.isEmpty()) {
-                int lastReviewId = newReview.getReviewId();;
+                int lastReviewId = reviews.get(0).getReviewId();
                 reviewCounter = Math.max(reviewCounter, lastReviewId + 1);
             } else {
                 System.out.println("Reviews list is empty. Resetting counter to 1.");
@@ -124,12 +124,9 @@ public class ReviewService {
         }
     }
 
-    public void deleteSpecificReview(Integer reviewId) {
-        logger.info("Attempting to delete review with id: " + reviewId);
+   public void deleteReview(int reviewId) {
         reviewRepository.deleteByReviewId(reviewId);
-
-    }
-
+   }
     public ResponseEntity<ReviewDomain> updateReviewById(String collectionName, String id, ReviewDomain updatedReview) {
         try {
             Query query = new Query(Criteria.where("_id").is(id));

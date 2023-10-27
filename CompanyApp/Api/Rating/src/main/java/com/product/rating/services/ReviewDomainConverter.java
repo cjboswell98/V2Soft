@@ -1,4 +1,4 @@
-package com.product.rating.services.dtosConverters;
+package com.product.rating.services;
 
 import com.product.rating.domain.ReviewDomain;
 

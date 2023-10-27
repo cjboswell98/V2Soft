@@ -1,8 +1,6 @@
-package com.product.rating.config;
+package com.product.rating.Jwt;
 
-
-import com.product.rating.security.JwtRequestFilter;
-import com.product.rating.services.JwtService;
+import com.product.rating.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,13 +24,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // Autowired user details service
     @Autowired
-    private JwtService jwtService;
+    private MyUserDetailsService myUserDetailsService;
 
     // Autowired JwtRequestFilter
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     // Autowired JwtConfig
+    @Autowired
+    private JwtConfig jwtConfig;
 
     // Autowired CorsConfigurationSource for handling CORS
     @Autowired
@@ -42,20 +42,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Create JwtAuthenticationFilter for handling authentication
+        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), jwtConfig);
+        authenticationFilter.setFilterProcessesUrl("/login");
 
         http.cors().configurationSource(corsConfigurationSource) // Set the CorsConfigurationSource
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/authenticate").permitAll()// Allow unauthenticated access
-                .antMatchers("/reviews/deleteReview/**").authenticated() // Secure the "delete by ID" endpoint
+                .antMatchers("/authenticate").permitAll()
+                .antMatchers("/**").permitAll()// Allow unauthenticated access
+                .antMatchers("/reviews/deleteReview/**").permitAll() // Secure the "delete by ID" endpoint
                 .antMatchers("/reviews/updateReview/**").authenticated()// Allow unauthenticated access to all other endpoints
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add this line
-                ; // If needed
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class); // If needed
     }
 
     // Bean for exposing the AuthenticationManager
