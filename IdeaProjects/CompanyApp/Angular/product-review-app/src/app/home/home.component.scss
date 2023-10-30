@@ -1,0 +1,31 @@
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 20vh; /* Ensures buttons are centered vertically on the page */
+  }
+
+  .button-container-1{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+     /* Ensures buttons are centered vertically on the page */
+  }
+  
+  
+  .space-buttons{
+    flex: 1 1 auto;
+  }
+  
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: green;
+    --mdc-protected-button-label-text-color: #fff;
+  }
+  
+  .mat-toolbar {
+    background: black;
+    color: var(--mat-toolbar-container-text-color);
+  }
+  

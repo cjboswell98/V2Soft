@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Client } from '../interfaces/Client';
 
 @Component({
   selector: 'app-login',
@@ -9,6 +10,9 @@ import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+  clients: Client[] = [];
+  firstName: string = '';
+  lastName: string = '';
   username: string = "";
   password: string = "";
   newReviewForm: FormGroup = new FormGroup({});
@@ -23,30 +27,70 @@ export class LoginComponent {
     });
   }
 
+  logout() {
+    // Remove the login status from local storage
+    localStorage.removeItem('loginStatus');
+
+    // Redirect to the login page or another destination
+    this.router.navigate(['/login']);
+  }
+
   onSubmit() {
     const body = {
       username: this.username,
       password: this.password
     };
-
+  
     this.http.post('http://localhost:8080/reviews/verifyLogin', body, { responseType: 'text' }).subscribe(
       (response) => {
         if (response === 'Login successful') {
           console.log('Login successful', response);
-          this.loginSuccess = true; // Set loginSuccess to true on successful login
-          this.router.navigate(['/review-list']);
+  
+          // Fetch the first name and last name using the username
+          this.fetchFirstNameAndLastName(this.username, () => {
+            // Save the login status and first name in local storage
+            localStorage.setItem('loginStatus', 'Login Successful');
+            localStorage.setItem('firstName', this.firstName);
+            localStorage.setItem('lastName', this.lastName);
+  
+            if (this.firstName === "admin") {
+              this.router.navigate(['/admin-review-list']);
+            } else {
+              this.router.navigate(['/home']);
+            }
+          });
         } else {
           console.error('Authentication failed:', response);
-          this.loginSuccess = false; // Set loginSuccess to false on failed login
+          // Handle authentication failure here, such as displaying an error message
         }
       },
       (error) => {
         console.error('Error:', error);
-        this.loginSuccess = false; // Set loginSuccess to false if an error occurs
+        // Handle error
       }
     );
-  }    
-
+  }
+  
+  fetchFirstNameAndLastName(username: string, callback: () => void) {
+    this.http.get<Client[]>(`http://localhost:8080/reviews/viewClients`).subscribe(
+      (clients) => {
+        const matchingClient = clients.find(client => client.username === username);
+        if (matchingClient) {
+          this.firstName = matchingClient.firstName;
+          this.lastName = matchingClient.lastName;
+          // You can also save the last name here if needed
+        }
+        callback();
+      },
+      (error) => {
+        console.error('Failed to fetch client data:', error);
+        // Handle error
+        callback();
+      }
+    );
+  }
+  
+  
   // Validation functions for username and password
   validateUsername(): ValidatorFn {
     return (control: AbstractControl) => {

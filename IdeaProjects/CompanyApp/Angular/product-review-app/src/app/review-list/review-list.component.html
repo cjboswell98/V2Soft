@@ -1,4 +1,18 @@
+<mat-toolbar color="primary">
+  <span>
+    Product Review Application
+  </span>
 
+  <button mat-icon-button color="warn" routerLink="/home" >
+    <mat-icon>home</mat-icon>
+  </button>
+
+  <span class="space-buttons"></span>
+  <button mat-raised-button (click)="logout()" color="">
+    Logout
+  </button>
+  
+</mat-toolbar>
 
 <ng-template #desktopView>
 
@@ -6,35 +20,45 @@
     Sorting Options
   </button> -->
 
-  <div>
-    <button class="sorting-button" (click)="toggleSortingOptions()">Sorting Options</button>
+  <div class="sorting-button">
+    <button mat-raised-button (click)="toggleSortingOptions()" color="primary">Sorting Options</button>
   </div>
   
-  <li class="nav-item"><a routerLink="/review-submit">Submit Review</a></li>
-  
-  <div class="sorting-options" *ngIf="showSortingOptions">
-    <label for="reviewIdSearch">Search by Review ID:</label>
-    <input type="text" id="reviewIdSearch" name="reviewIdSearch" [(ngModel)]="reviewIdSearch" (input)="onReviewIdSearch()">
-  </div>
-  
+  <li class="nav-item">
+    <button mat-raised-button routerLink="/review-submit" color="primary">Submit Review</button>
+  </li>
   
   
   <div class="sorting-options" *ngIf="showSortingOptions">
-    <label for="productFilter">Filter by Product:</label>
-    <select id="productFilter" name="productFilter" [(ngModel)]="selectedProduct" (change)="onProductFilterChange()">
-      <option value="CompanyTRAK">CompanyTRAK</option>
-      <option value="WeInvite">WeInvite</option>
-      <option value="iConnectX">iConnectX</option>
-      <option value="EmployMe">EmployMe</option>
-      <option value="">All</option>
-      <!-- Add other product options here -->
-    </select>
+    <mat-form-field class="search-field">
+      <mat-label>Search by Review ID:</mat-label>
+      <input matInput type="text" id="reviewIdSearch" name="reviewIdSearch" [(ngModel)]="reviewIdSearch" (input)="onReviewIdSearch()">
+    </mat-form-field>
   </div>
   
-  <div class="sorting-options" *ngIf="showSortingOptions">
-    <label for="rateCodeSearch">Search by Rate Code:</label>
-    <input type="text" id="rateCodeSearch" name="rateCodeSearch" [(ngModel)]="rateCodeSearch" (input)="onRateCodeSearch()">
+  <div class="sorting-options-filter" *ngIf="showSortingOptions">
+    <mat-form-field class="filter-field">
+      <mat-label>Filter by Product:</mat-label>
+      <mat-select id="productFilter" name="productFilter" [(ngModel)]="selectedProduct" (change)="onProductFilterChange()">
+        <mat-option value="CompanyTRAK">CompanyTRAK</mat-option>
+        <mat-option value="WeInvite">WeInvite</mat-option>
+        <mat-option value="iConnectX">iConnectX</mat-option>
+        <mat-option value="EmployMe">EmployMe</mat-option>
+        <mat-option value="">All</mat-option>
+        <!-- Add other product options here -->
+      </mat-select>
+    </mat-form-field>
   </div>
+  
+  
+  <div class="sorting-options" *ngIf="showSortingOptions">
+    <mat-form-field class="search-field">
+      <mat-label>Search by Rate Code:</mat-label>
+      <input matInput type="text" id="rateCodeSearch" name="rateCodeSearch" [(ngModel)]="rateCodeSearch" (input)="onRateCodeSearch()">
+    </mat-form-field>
+  </div>
+  
+
 
 <div class="table-responsive">
 <div class="review-list mat-elevation-z2">
@@ -55,7 +79,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName">First Name</th>
       <td mat-cell *matCellDef="let review">{{ review.firstName }}</td>
     </ng-container>
-
+  
     <ng-container matColumnDef="lastName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName">Last Name</th>
       <td mat-cell *matCellDef="let review">{{ review.lastName }}</td>
@@ -94,6 +118,7 @@
   ></mat-paginator>
 </div>
 </ng-template>
+
 
 <div class="mobile" *ngIf="isMobileView; else desktopView">
 
@@ -167,7 +192,7 @@
 
             <div class="field-name">Product Name:</div><div class="field-text">{{ review.productName }}</div>
 
-            <div class="field-name">First & Last Name:</div><div class="field-text">{{ review.firstName }} {{ review.lastName }}</div>
+           
 
             <div class="field-name">Zip Code:</div><div class="field-text">{{ review.zipCode }}</div>
 

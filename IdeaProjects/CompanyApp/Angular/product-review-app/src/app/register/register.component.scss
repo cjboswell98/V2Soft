@@ -5,6 +5,20 @@ body {
     height: 100vh;
   }
 
+  .space-buttons{
+    flex: 1 1 auto;
+  }
+
+  .mat-mdc-raised-button.mat-primary {
+    --mdc-protected-button-container-color: green;
+    --mdc-protected-button-label-text-color: #fff;
+}
+
+  .mat-toolbar {
+    background: black;
+    color: var(--mat-toolbar-container-text-color);
+}
+
 h2 {
     color: #333;
     font-size: 24px;
@@ -34,7 +48,7 @@ form {
   
     button {
       padding: 10px 20px;
-      background-color: #007bff;
+      background-color: green;
       border: none;
       border-radius: 5px;
       color: #fff;

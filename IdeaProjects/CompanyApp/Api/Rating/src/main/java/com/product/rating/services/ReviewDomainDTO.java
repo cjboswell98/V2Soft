@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ReviewDomainDTO {
     @Id
-    private String reviewId;
+    private int reviewId;
     private String clientId;
     private String productName;
     private String firstName;
@@ -34,11 +34,11 @@ public class ReviewDomainDTO {
     }
     // ID
 
-    public String getReviewId() {
+    public int getReviewId() {
         return reviewId;
     }
 
-    public void setReviewId(String reviewId) {
+    public void setReviewId(int reviewId) {
         this.reviewId = reviewId;
     }
 
@@ -119,7 +119,7 @@ public class ReviewDomainDTO {
     }
 
     public void addToHistory() {
-        ReviewDomain newVersion = new ReviewDomain(clientId, reviewId, productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
+        ReviewDomain newVersion = new ReviewDomain(reviewId, clientId,  productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
         historyList.add(newVersion);
     }
 

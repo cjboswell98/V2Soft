@@ -1,5 +1,6 @@
 package com.product.rating.domain;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -9,8 +10,9 @@ import java.util.List;
 @Document(collection = "reviews")
 public class ReviewDomain {
 
+    @Id
+    private int reviewId;
     private String clientId;
-    private String reviewId;
     private String productName;
     private String firstName;
     private String lastName;
@@ -26,7 +28,7 @@ public class ReviewDomain {
     public ReviewDomain() {
     }
 
-    public ReviewDomain(String reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+    public ReviewDomain(int reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
         this.reviewId = reviewId;
         this.clientId = clientId;
         this.productName = productName;
@@ -44,11 +46,11 @@ public class ReviewDomain {
         this.historyList.addAll(historyList);
     }
 
-    public String getReviewId() {
+    public int getReviewId() {
         return reviewId;
     }
 
-    public void setReviewId(String reviewId) {
+    public void setReviewId(int reviewId) {
         this.reviewId = reviewId;
     }
 

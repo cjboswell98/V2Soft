@@ -1,27 +1,23 @@
-
-import { ReviewApiService } from '../services/review-api.service';
-import { Review } from '../interfaces/Review';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { map } from 'rxjs/operators';
-import { ResponseHandlerService } from '../services/response-handler.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Jwt } from '../interfaces/Jwt';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { Component, OnInit, ViewChild, HostListener } from "@angular/core";
+import { MatPaginator, PageEvent } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource } from "@angular/material/table";
+import { map } from "rxjs";
+import { Review } from "../interfaces/Review";
+import { ResponseHandlerService } from "../services/response-handler.service";
+import { ReviewApiService } from "../services/review-api.service";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Router } from "@angular/router";
 
 
 @Component({
-  selector: 'app-review-list',
-  templateUrl: './review-list.component.html',
-  styleUrls: ['./review-list.component.scss'], 
+  selector: 'app-admin-review-list',
+  templateUrl: './admin-review-list.component.html',
+  styleUrls: ['./admin-review-list.component.scss'], 
   animations: []
 })
-export class ReviewListComponent implements OnInit {
+export class AdminReviewListComponent implements OnInit {
   reviews: Review[] = [];
   pagedReviews: Review[] = [];
   selectedPageSize: number = 10;
@@ -51,7 +47,7 @@ export class ReviewListComponent implements OnInit {
   ) {}
 
 
-  displayedColumns: string[] = ['reviewId', 'productName', 'firstName', 'lastName', 'zipCode', 'rateCode', 'comments', 'dateTime'];
+  displayedColumns: string[] = ['reviewId', 'productName', 'firstName', 'lastName', 'zipCode', 'rateCode', 'comments', 'dateTime','delete'];
 
   // Initializes the component and refreshes the page
   ngOnInit(): void {
@@ -86,6 +82,20 @@ export class ReviewListComponent implements OnInit {
   onResize(event: any) {
     this.checkScreenSize();
   }
+
+  // Delete a review by reviewId
+  deleteReview(review: any) {
+    this.apiService.deleteReview(review).subscribe(
+      (resp) => {
+        this.refreshPage();
+      },
+      (error:HttpErrorResponse) => {
+        console.log(error);
+      }
+    );
+  }
+  
+
 
   login() {
     const storedFirstName = localStorage.getItem('firstName'); // Retrieve the first name from local storage

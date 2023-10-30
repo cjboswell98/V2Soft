@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'product-review-app';
+
+// public isLoggedIn(){
+//   return this.us
+// }
+
 }

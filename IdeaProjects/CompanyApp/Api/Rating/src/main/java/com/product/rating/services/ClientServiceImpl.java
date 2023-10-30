@@ -30,7 +30,7 @@ public class ClientServiceImpl implements ClientService {
 
     // Method to create a new client with a unique ID, username, and hashed password
     @Override
-    public String createNewClient(String username, String password) {
+    public String createNewClient(String firstName, String lastName, String username, String password) {
         // Generate a random salt, ID, hash the password, then save them to a new client
         SecureRandom random = new SecureRandom(); // Initializing SecureRandom for generating random bytes
         byte[] saltBytes = new byte[16]; // Initializing a byte array for salt
@@ -42,7 +42,7 @@ public class ClientServiceImpl implements ClientService {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
         String hashedPassword = encoder.encode(password); // Hashing the provided password
 
-        Client newClient = new Client(clientId, username, hashedPassword); // Creating a new client object
+        Client newClient = new Client(clientId,firstName, lastName, username, hashedPassword); // Creating a new client object
         clientRepository.save(newClient); // Saving the new client to the repository
 
         return "Client successfully created"; // Returning a success message
@@ -50,7 +50,7 @@ public class ClientServiceImpl implements ClientService {
 
     // Method to verify login information based on the provided username and password
     @Override
-    public boolean verifyLoginInformation(String username, String password) {
+    public boolean verifyLoginInformation(String firstName, String lastName, String username, String password) {
         Optional<Client> clientOptional = clientRepository.findByUsername(username); // Retrieving the client based on the username from the repository
 
         if (clientOptional.isPresent()) { // Checking if the client is present

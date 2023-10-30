@@ -49,8 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/authenticate").permitAll()// Allow unauthenticated access
-                .antMatchers("/reviews/deleteReview/**").authenticated() // Secure the "delete by ID" endpoint
+                .antMatchers("/authenticate").permitAll()
+                .antMatchers("/**").permitAll()// Allow unauthenticated access
+                .antMatchers("/reviews/deleteReview/**").permitAll() // Secure the "delete by ID" endpoint
                 .antMatchers("/reviews/updateReview/**").authenticated()// Allow unauthenticated access to all other endpoints
                 .and()
                 .sessionManagement()

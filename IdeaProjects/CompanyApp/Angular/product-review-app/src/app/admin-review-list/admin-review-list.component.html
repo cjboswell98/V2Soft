@@ -1,0 +1,214 @@
+<mat-toolbar color="primary">
+  <span>
+    Product Review Application (ADMIN)
+  </span>
+
+  
+  <span class="space-buttons"></span>
+  <button mat-raised-button (click)="logout()" color="warn">
+    Logout
+  </button>
+  
+</mat-toolbar>
+
+<ng-template #desktopView>
+
+    <!-- <button [disabled]="responseHandlerService.isActionOngoing()" (click)="performAsyncAction()" class="sorting-button">
+      Sorting Options
+    </button> -->
+  
+    <div class="sorting-button">
+      <button mat-raised-button (click)="toggleSortingOptions()">Sorting Options</button>
+    </div>
+    
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <mat-form-field class="search-field">
+        <mat-label>Search by Review ID:</mat-label>
+        <input matInput type="text" id="reviewIdSearch" name="reviewIdSearch" [(ngModel)]="reviewIdSearch" (input)="onReviewIdSearch()">
+      </mat-form-field>
+    </div>
+    
+    <div class="sorting-options-filter" *ngIf="showSortingOptions">
+      <mat-form-field class="filter-field">
+        <mat-label>Filter by Product:</mat-label>
+        <mat-select id="productFilter" name="productFilter" [(ngModel)]="selectedProduct" (change)="onProductFilterChange()">
+          <mat-option value="CompanyTRAK">CompanyTRAK</mat-option>
+          <mat-option value="WeInvite">WeInvite</mat-option>
+          <mat-option value="iConnectX">iConnectX</mat-option>
+          <mat-option value="EmployMe">EmployMe</mat-option>
+          <mat-option value="">All</mat-option>
+          <!-- Add other product options here -->
+        </mat-select>
+      </mat-form-field>
+    </div>
+    
+    
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <mat-form-field class="search-field">
+        <mat-label>Search by Rate Code:</mat-label>
+        <input matInput type="text" id="rateCodeSearch" name="rateCodeSearch" [(ngModel)]="rateCodeSearch" (input)="onRateCodeSearch()">
+      </mat-form-field>
+    </div>
+    
+  
+  <div class="table-responsive">
+  <div class="review-list mat-elevation-z2">
+    <h2>Review List</h2>
+    <table mat-table [dataSource]="pagedReviews" matSort class="mat-elevation-z8" matSort>
+  
+      <ng-container matColumnDef="reviewId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="reviewId">Review ID</th>
+        <td mat-cell *matCellDef="let review">{{ review.reviewId }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="productName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="productName">Product Name</th>
+        <td mat-cell *matCellDef="let review">{{ review.productName }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName">First Name</th>
+        <td mat-cell *matCellDef="let review">{{ review.firstName }}</td>
+      </ng-container>
+    
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName">Last Name</th>
+        <td mat-cell *matCellDef="let review">{{ review.lastName }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="zipCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="zipCode">Zip Code</th>
+        <td mat-cell *matCellDef="let review">{{ review.zipCode }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="rateCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="rateCode">Rate Code</th>
+        <td mat-cell *matCellDef="let review">{{ review.rateCode }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="comments">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="comments">Comments</th>
+        <td mat-cell *matCellDef="let review">{{ review.comments }}</td>
+      </ng-container>
+  
+      <ng-container matColumnDef="dateTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="dateTime">Date Time</th>
+        <td mat-cell *matCellDef="let review">{{ review.dateTime }}</td>
+      </ng-container>
+
+      <!-- delete -->
+      <ng-container matColumnDef="delete">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="delete">Delete</th>
+        <td mat-cell *matCellDef="let review">
+          <button mat-icon-button color="warn" (click)="deleteReview(review.reviewId)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+  
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+    <mat-paginator
+      [length]="reviews.length"
+      [pageSize]="selectedPageSize"
+      (page)="onPageChange($event)"
+      [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+    ></mat-paginator>
+  </div>
+  </ng-template>
+  
+  
+  <div class="mobile" *ngIf="isMobileView; else desktopView">
+  
+    <div>
+      <button class="sorting-button" (click)="toggleSortingOptions()">Sorting Options</button>
+    </div>
+    
+    <h3 class="nav-item"><a routerLink="/review-submit">Submit Review</a></h3>
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <label for="reviewIdSearch">Search by Review ID:</label>
+      <input type="text" id="reviewIdSearch" name="reviewIdSearch" [(ngModel)]="reviewIdSearch" (input)="onReviewIdSearch()">
+    </div>
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <label for="pageSize">Number of Reviews:</label>
+      <select id="pageSize" name="pageSize" [(ngModel)]="selectedPageSize" (change)="onPageSizeChange()">
+        <option value="1000">All</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="30">30</option>
+      </select>
+    </div>
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <label for="productFilter">Filter by Product:</label>
+      <select id="productFilter" name="productFilter" [(ngModel)]="selectedProduct" (change)="onProductFilterChange()">
+        <option value="CompanyTRAK">CompanyTRAK</option>
+        <option value="WeInvite">WeInvite</option>
+        <option value="iConnectX">iConnectX</option>
+        <option value="EmployMe">EmployMe</option>
+        <option value="">All</option>
+        <!-- Add other product options here -->
+      </select>
+    </div>
+    
+    <div class="sorting-options" *ngIf="showSortingOptions">
+      <label for="rateCodeSearch">Search by Rating:</label>
+      <input type="text" id="rateCodeSearch" name="rateCodeSearch" [(ngModel)]="rateCodeSearch" (input)="onRateCodeSearch()">
+    </div>
+    <style>
+         .review-item {
+          display: flex;
+          justify-content: space-between;
+          display: inline;
+      }
+  
+      .field-name {
+          flex-basis: 30%; /* Adjust the width as needed */
+          text-align: left;
+          font-weight: bold;
+          
+      }
+  
+      .field-text {
+          flex-basis: 70%; /* Adjust the width as needed */
+          text-align: right;
+           color: #007bff;
+      }
+      
+  </style>
+  
+  <div class="review-list mat-elevation-z2">
+      <!-- Add Angular Material elevation class for shadow -->
+      <h2>Review List</h2>
+      <ul>
+          <li *ngFor="let review of pagedReviews" class="mat-card">
+              <!-- Add Angular Material card class -->
+              <div class="field-name">Review ID:</div><div class="field-text">{{ review.reviewId }}</div>
+  
+              <div class="field-name">Product Name:</div><div class="field-text">{{ review.productName }}</div>
+  
+             
+  
+              <div class="field-name">Zip Code:</div><div class="field-text">{{ review.zipCode }}</div>
+  
+              <div class="field-name">Rate Code:</div><div class="field-text">{{ review.rateCode }}</div>
+  
+              <div class="field-name">Comments:</div><div class="field-text">{{ review.comments }}</div>
+  
+              <div class="field-name">Date Time:</div><div class="field-text">{{ review.dateTime }}</div>
+              <!-- Add more properties as needed -->
+  
+  
+          </li>
+      </ul>
+  </div>
+  </div>
+  

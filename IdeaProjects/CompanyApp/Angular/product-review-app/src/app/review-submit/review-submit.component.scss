@@ -1,71 +1,73 @@
-.nav-item {
-    margin: 10px;
-    display: inline-block;
-    a {
-      text-decoration: none;
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.sorting-button {
+  display: flex;
+  justify-content: left;
+  margin-top: 20px;
+  margin-bottom: -30px;
+}
+
+.space-buttons{
+  flex: 1 1 auto;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: green;
+  --mdc-protected-button-label-text-color: #fff;
+}
+
+.mat-toolbar {
+  background: black;
+  color: var(--mat-toolbar-container-text-color);
+}
+
+h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 0px;
+  text-align: center; /* Add this line to center the text */
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 50px;
+  
+
+  div {
+    margin-bottom: 20px;
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input {
       padding: 10px;
-      border: 1px solid  #007bff;
+      border: 1px solid #ddd;
       border-radius: 5px;
-      color:  #007bff;
-      transition: all 0.3s;
-      &:hover {
-        background-color: #007bff;
-        color: white;
-      }
     }
   }
 
-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 50px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    color: #007bff; /* Set label text color to blue */
-  }
-  
-  input[type="text"],
-  input[type="datetime-local"],
-  textarea,
-  select {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 300px;
-    margin-bottom: 20px;
-    color: black; /* Set input text color to blue */
-  }
-  
-  select {
-    width: 320px;
-    color: #007bff; /* Set select text color to blue */
-  }
-  
   button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: green;
     border: none;
     border-radius: 5px;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
-    width: 300px;
+
+    &:hover {
+      background-color: #f44336;
+    }
+
+    &:active {
+      background-color: #3f51b5;
+    }
   }
-  
-  button:hover {
-    background-color: #f44336;
-  }
-  
-  button:active {
-    background-color: #007bff;
-  }
-  
-  div {
-    color: red; /* Set error message color to red */
-    margin-bottom: 10px;
-  }
-  
+}

@@ -152,19 +152,20 @@ public class ProductController {
 
     // C R U (D)
     // REST API endpoint to delete a review with authorization
-    @PreAuthorize("@authorizationServiceImpl.verifyToken(#token, #clientId, 'delete')")
-    @DeleteMapping("/deleteReview")
-    public ResponseEntity<Object> deleteReview(@RequestHeader(name = "Authorization") String token, @RequestHeader(name = "clientId") String clientId, @RequestHeader(name = "reviewId") String reviewId) {
-        return reviewService.deleteSpecificReview(clientId, reviewId);
+    @DeleteMapping("/deleteReview/{reviewId}")
+    public void deleteReview(@PathVariable("reviewId") int reviewId) {
+        reviewService.deleteReview(reviewId);
     }
 
     // Below are Endpoints for Client
     // REST API endpoint to create a new client
     @PostMapping("/newClient")
     public String newClient(@RequestBody Map<String, String> request) {
+        String firstName = request.get("firstName");
+        String lastName = request.get("lastName");
         String username = request.get("username");
         String password = request.get("password");
-        return clientService.createNewClient(username, password);
+        return clientService.createNewClient(firstName, lastName,username, password);
     }
 
     // REST API endpoint to get all clients
@@ -176,10 +177,12 @@ public class ProductController {
     // REST API endpoint to verify login information
     @PostMapping("/verifyLogin")
     public ResponseEntity<String> verifyLogin(@RequestBody Map<String, String> request) {
+        String firstName = request.get("firstName");
+        String lastName = request.get("lastName");
         String username = request.get("username");
         String password = request.get("password");
 
-        if (clientService.verifyLoginInformation(username, password)) {
+        if (clientService.verifyLoginInformation(firstName, lastName, username, password)) {
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");

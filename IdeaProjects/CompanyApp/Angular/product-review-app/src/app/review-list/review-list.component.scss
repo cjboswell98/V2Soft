@@ -1,103 +1,45 @@
-// Add your styles for the paragraph tag here
-.desktop {
-  p {
-    // Add your styles for the paragraph tag here
-  }
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: green;
+  --mdc-protected-button-label-text-color: #fff;
 }
 
-.sorting-options {
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 0px;
-  width: 20%;
-  margin-left: 30px;
-  margin-top: -30px;
 
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
 
-  select,
-  input[type="text"] {
-    padding: 8px;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    width: 16%;
-  }
+.mat-toolbar {
+  background: black;
+  color: var(--mat-toolbar-container-text-color);
 }
 
+
+.space-buttons {
+  flex: 1; /* This will push the button to the right */
+  text-align: right; /* Aligns the button's text to the right */
+  color: yellow;
+}
 .sorting-button {
-  padding: 10px;
-  border: 1px solid #007bff;
-  border-radius: 17px;
-  color: #007bff;
-  transition: all 0.3s;
-  cursor: pointer;
-  margin: 10px;
-  &:hover {
-    background-color: #007bff;
-    color: white;
-  }
+  display: flex;
+  justify-content: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .sorting-options {
-  position: relative;
-  display: inline-grid;
-  width: 26%;
-  margin-top: -1px;
-  margin-left: 91px;
-  margin-right: -23px;
-
-
-  select {
-    padding: 8px;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="black" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position: center 15px;
-
-    &:focus {
-      outline: none;
-      border-color: red;
-      box-shadow: 0 0 5px #007bff;
-    }
-
-    &:hover {
-      border-color: #007bff;
-    }
-
-    &:active {
-      border-color: #f44336;
-    }
-
-    animation: fadeIn 0.5s;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch; /* Horizontally center-align items */
+  margin-top: 20px;
+  width: 100%; /* Stretch the container vertically */
 }
 
-.nav-item {
-  margin: 0px;
-  display: inline-block;
-  a {
-    text-decoration: none;
-    padding: 10px;
-    border: 1px solid #007bff;
-    border-radius: 5px;
-    color: #007bff;
-    transition: all 0.3s;
-    &:hover {
-      background-color: #007bff;
-      color: white;
-    }
-  }
+.sorting-options-filter {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch; /* Horizontally center-align items */
+  
+  width: 100%; /* Stretch the container vertically */
 }
+
 
 .review-list {
   padding: 20px;
@@ -125,13 +67,13 @@ table {
   margin-top: 20px;
 
   th, td {
-    border: 1px solid #007bff;
+    border: 1px solid whitesmoke;
     padding: 8px;
     text-align: left;
   }
 
   th {
-    background-color: #007bff;
+    background-color: whitesmoke;
   }
 }
 
@@ -268,8 +210,8 @@ table {
     padding: 0px;
     margin-right: 18px;
     margin-left: 224px;
-    margin-bottom: 5px;
-    margin-top: 10px;
+    margin-bottom: 1px;
+    margin-top: -55px;
     a {
       
       text-decoration: none;

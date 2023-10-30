@@ -1,5 +1,8 @@
 export interface Client {
-    id: string;
+    id: string | undefined;
+    lastName: string;
+    firstName: string;
+    clientId: string;
     username: string;
     password: string;
 }

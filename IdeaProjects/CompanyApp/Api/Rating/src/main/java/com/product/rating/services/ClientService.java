@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface ClientService {
 
-    String createNewClient(String username, String password);
+    String createNewClient(String firstName, String lastName, String username, String password);
 
     List<Client> findAllClients(); // New method to fetch all clients
 
@@ -14,5 +14,5 @@ public interface ClientService {
 
     String hashClientSecret(String password);
 
-    boolean verifyLoginInformation(String username, String password);
+    boolean verifyLoginInformation(String firstName, String lastName, String username, String password);
 }

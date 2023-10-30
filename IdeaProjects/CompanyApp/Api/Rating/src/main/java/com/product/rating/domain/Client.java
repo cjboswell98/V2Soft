@@ -8,15 +8,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("clients")
 public class Client {
 
+    @Id
     String clientId;
+    String firstName;
+    String lastName;
     String username;
     String password;
 
     public Client() {
     }
 
-    public Client(String clientId, String username, String password) {
+    public Client(String clientId, String firstName, String lastName, String username, String password) {
         this.clientId = clientId;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.username = username;
         this.password = password;
     }
@@ -27,6 +32,22 @@ public class Client {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getUsername() {
