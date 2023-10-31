@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Client {
 
     @Id
+    String id;
     String clientId;
     String firstName;
     String lastName;
@@ -18,12 +19,21 @@ public class Client {
     public Client() {
     }
 
-    public Client(String clientId, String firstName, String lastName, String username, String password) {
+    public Client(String id, String clientId, String firstName, String lastName, String username, String password) {
+        this.id = id;
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getClientId() {

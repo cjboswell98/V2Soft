@@ -2,7 +2,8 @@ package com.product.rating.controller;
 
 // Import necessary packages and libraries
 import com.product.rating.domain.Client;
-import com.product.rating.domain.ReviewDomain;
+import com.product.rating.domain.Image;
+import com.product.rating.domain.Review;
 import com.product.rating.repository.ClientRepository;
 import com.product.rating.services.ClientService;
 import com.product.rating.services.ReviewService;
@@ -12,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -79,9 +82,9 @@ public class ProductController {
     // C (R) U D
     // REST API endpoint to view all reviews
     @GetMapping("/viewAllReviews")
-    public ResponseEntity<List<ReviewDomain>> viewAllReviews() {
+    public ResponseEntity<List<Review>> viewAllReviews() {
         // Retrieve all reviews
-        List<ReviewDomain> ratings = reviewService.viewAllReviews();
+        List<Review> ratings = reviewService.viewAllReviews();
         if (ratings.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -92,9 +95,9 @@ public class ProductController {
     // C (R) U D
     // REST API endpoint to view reviews in a specific collection
     @GetMapping("/viewReviews/{collectionName}")
-    public ResponseEntity<List<ReviewDomain>> viewReviewsInCollection(@PathVariable String collectionName) {
+    public ResponseEntity<List<Review>> viewReviewsInCollection(@PathVariable String collectionName) {
         // Retrieve reviews from a specific collection
-        List<ReviewDomain> reviews = reviewService.viewReviewsInCollection(collectionName);
+        List<Review> reviews = reviewService.viewReviewsInCollection(collectionName);
         if (reviews.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -105,9 +108,9 @@ public class ProductController {
     // C (R) U D
     // REST API endpoint to view the latest reviews
     @GetMapping("/viewLatestReviews")
-    public ResponseEntity<List<ReviewDomain>> viewLatestReviews(@RequestParam(name = "limit", defaultValue = "10") int limit) {
+    public ResponseEntity<List<Review>> viewLatestReviews(@RequestParam(name = "limit", defaultValue = "10") int limit) {
         // Retrieve the latest reviews with an optional limit
-        List<ReviewDomain> latestReviews = reviewService.getLatestReviews(limit);
+        List<Review> latestReviews = reviewService.getLatestReviews(limit);
 
         if (latestReviews.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -119,9 +122,9 @@ public class ProductController {
     // C (R) U D
     // REST API endpoint to view reviews by rate code
     @GetMapping("/viewByRateCode")
-    public ResponseEntity<List<ReviewDomain>> viewReviewsByRateCode(@RequestParam int rateCode) {
+    public ResponseEntity<List<Review>> viewReviewsByRateCode(@RequestParam int rateCode) {
         // Retrieve reviews by a specific rate code
-        List<ReviewDomain> reviews = reviewService.findReviewsByRateCode(rateCode);
+        List<Review> reviews = reviewService.findReviewsByRateCode(rateCode);
 
         if (reviews.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -133,7 +136,7 @@ public class ProductController {
     // (C) R U D
     // REST API endpoint to add a new review
     @PostMapping("/addReview")
-    public ResponseEntity<String> addReview(@RequestBody ReviewDomain newReview) {
+    public ResponseEntity<String> addReview(@RequestBody Review newReview) {
         // Try to add a new review
         try {
             String result = reviewService.addReview(newReview);
@@ -143,10 +146,25 @@ public class ProductController {
         }
     }
 
+    @PostMapping("/image")
+    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
+       String uploadImage = reviewService.uploadImage(file);
+       return ResponseEntity.status(HttpStatus.OK)
+               .body(uploadImage);
+    }
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
+        byte[] imageData = reviewService.downloadImage(fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("image/png"))
+                .body(imageData);
+    }
+
     // C R (U) D
     // REST API endpoint to update a review
     @PutMapping("/updateReview/{id}")
-    public ResponseEntity<ReviewDomain> updateReview(@PathVariable String id, @RequestBody ReviewDomain updatedRating) {
+    public ResponseEntity<Review> updateReview(@PathVariable String id, @RequestBody Review updatedRating) {
         return reviewService.updateReviewById(collectionName, id, updatedRating);
     }
 

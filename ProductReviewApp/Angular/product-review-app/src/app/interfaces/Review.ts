@@ -1,5 +1,8 @@
+import { FileHandle } from "./file-handle.model";
+
 export interface Review {
   id?: string; // MongoDB document ID
+  clientId: string,
   reviewId: string,
   productName: string;
   firstName: string;
@@ -8,4 +11,5 @@ export interface Review {
   rateCode: number;
   comments: string;
   dateTime: string;
+  reviewImages: FileHandle[]
 }

@@ -2,8 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Review } from '../interfaces/Review';
 import { ReviewApiService } from '../services/review-api.service';
 import { ClientService } from '../services/client.service';
-import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FileHandle } from '../interfaces/file-handle.model';
+import { DomSanitizer } from '@angular/platform-browser';
+
+
 @Component({
   selector: 'app-review-submit',  // Specifies the selector for the component
   templateUrl: './review-submit.component.html',  // Specifies the template file for the component
@@ -14,6 +18,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
 
   newReview: Review = {  // Object of type Review for holding the new review data
     reviewId: '',  // Initialize the reviewId to an empty string
+    clientId: '',
     productName: '',  // Initialize the productName to an empty string
     firstName: '',  // Initialize the firstName to an empty string
     lastName: '',  // Initialize the lastName to an empty string
@@ -21,15 +26,17 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     rateCode: 0,  // Initialize the rateCode to 0
     comments: '',  // Initialize the comments to an empty string
     dateTime: '',  // Initialize the dateTime to an empty string
+    reviewImages: []
   };
 
   newReviewForm: FormGroup = new FormGroup({});  // Initialize the newReviewForm as a FormGroup
 
-  constructor(private reviewApiService: ReviewApiService, private clientService: ClientService, private router: Router) {}  // Constructor for the ReviewSubmitComponent, injecting the required services
+  constructor(private sanitizer: DomSanitizer, private reviewApiService: ReviewApiService, private clientService: ClientService, private router: Router) {}  // Constructor for the ReviewSubmitComponent, injecting the required services
 
   ngOnInit(): void {  // Angular lifecycle hook OnInit
     this.newReviewForm = new FormGroup({  // Initialize the newReviewForm FormGroup with form controls
 
+      clientId: new FormControl(localStorage.getItem('clientId')),
       productName: new FormControl('', Validators.required),  // Add the product name form control with necessary validators
       firstName: new FormControl(localStorage.getItem('firstName')),  // Add the first name form control with necessary validators
       lastName: new FormControl(localStorage.getItem('lastName')),  // Add the last name form control with necessary validators
@@ -62,6 +69,9 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   }
 
   submitReview(): void {
+    
+    const reviewFormData = this.prepareFormData(this.newReview);
+
     if (this.newReviewForm.valid) {
       const currentDate = new Date();
       const formattedDate = currentDate.toLocaleString();
@@ -102,6 +112,40 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
       this.router.navigate(['/review-list']);
     }
   }
+
+  onFileSelected(event: any) {
+    if(event.target.files) {
+      const file = event.target.files[0];
+
+      const fileHandle: FileHandle = {
+        file: file,
+        url: this.sanitizer.bypassSecurityTrustUrl(
+          window.URL.createObjectURL(file)
+        )
+      }
+
+      this.newReview.reviewImages.push(fileHandle);
+    }
+  }
+
+  prepareFormData(newReview: Review): FormData {
+    const formData = new FormData();
+
+    formData.append(
+      'review',
+      new Blob([JSON.stringify(newReview)], {type: 'application/json'})
+    );
+
+    for(var i = 0; i < newReview.reviewImages.length; i++) {
+      formData.append(
+        'imageFile',
+        newReview.reviewImages[i].file,
+        newReview.reviewImages[i].file.name
+      );
+    }
+
+    return formData;
+  }
   
   loadReviews(): void {
     this.reviewApiService.getAllReviews().subscribe((data: Review[]) => {
@@ -123,4 +167,6 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
       return valid ? null : { invalidZipCode: true };  // Return an object if the zip code is invalid
     };
   }
+
+
 }

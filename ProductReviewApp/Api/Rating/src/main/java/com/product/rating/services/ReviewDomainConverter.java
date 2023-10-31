@@ -1,23 +1,23 @@
 package com.product.rating.services;
 
-import com.product.rating.domain.ReviewDomain;
+import com.product.rating.domain.Review;
 
 public class ReviewDomainConverter {
 
-    public static ReviewDomainDTO convertToDto(ReviewDomain ReviewDomain) {
+    public static ReviewDomainDTO convertToDto(Review Review) {
         ReviewDomainDTO dto = new ReviewDomainDTO();
-        dto.setReviewId(ReviewDomain.getReviewId());
-        dto.setFirstName(ReviewDomain.getFirstName());
-        dto.setLastName(ReviewDomain.getLastName());
-        dto.setZipCode(ReviewDomain.getZipCode());
-        dto.setRateCode(ReviewDomain.getRateCode());
-        dto.setComments(ReviewDomain.getComments());
-        dto.setDateTime(ReviewDomain.getDateTime());
+        dto.setReviewId(Review.getReviewId());
+        dto.setFirstName(Review.getFirstName());
+        dto.setLastName(Review.getLastName());
+        dto.setZipCode(Review.getZipCode());
+        dto.setRateCode(Review.getRateCode());
+        dto.setComments(Review.getComments());
+        dto.setDateTime(Review.getDateTime());
         return dto;
     }
 
-    public static ReviewDomain convertToEntity(ReviewDomainDTO dto) {
-        ReviewDomain entity = new ReviewDomain();
+    public static Review convertToEntity(ReviewDomainDTO dto) {
+        Review entity = new Review();
         entity.setReviewId(dto.getReviewId());
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());

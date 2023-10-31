@@ -1,7 +1,7 @@
 package com.product.rating.services;
 
-import com.product.rating.model.ClientModel;
-import com.product.rating.model.JwtToken;
+import com.product.rating.requestResponse.ClientModel;
+import com.product.rating.requestResponse.JwtToken;
 import com.product.rating.repository.JwtTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;

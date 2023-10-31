@@ -1,4 +1,4 @@
-package com.product.rating.model;
+package com.product.rating.requestResponse;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

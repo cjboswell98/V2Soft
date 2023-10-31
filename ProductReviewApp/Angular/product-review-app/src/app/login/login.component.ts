@@ -19,12 +19,14 @@ export class LoginComponent {
   loginSuccess: boolean = true; // Initialize loginSuccess as true
   showWrongPasswordMessage: boolean = true;
   errorMessage: string = '';
+  clientId!: string;
 
 
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
     this.newReviewForm = new FormGroup({
+      clientId: new FormControl(localStorage.getItem('clientId')),
       username: new FormControl('', [Validators.required, this.validateUsername()]), // Use custom validator for username
       password: new FormControl('', [Validators.required, this.validatePassword()]) // Use custom validator for password
     });
@@ -40,6 +42,7 @@ export class LoginComponent {
 
   onSubmit() {
     const body = {
+      clientId: this.clientId,
       username: this.username,
       password: this.password
     };
@@ -55,6 +58,7 @@ export class LoginComponent {
             localStorage.setItem('loginStatus', 'Login Successful');
             localStorage.setItem('firstName', this.firstName);
             localStorage.setItem('lastName', this.lastName);
+            localStorage.setItem('clientId', this.clientId);
   
             if (this.firstName === "admin") {
               this.router.navigate(['/admin-review-list']);

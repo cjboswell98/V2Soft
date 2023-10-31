@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
+  clientId!: string;
   firstName: string = '';
   lastName: string = '';
   username: string = '';
@@ -30,6 +31,7 @@ export class RegisterComponent {
 
   onSubmit() {
     const body = {
+      clientId: this.clientId,
       firstName: this.firstName,
       lastName: this.lastName,
       username: this.username,
@@ -65,6 +67,7 @@ export class RegisterComponent {
           // Save the first name and last name to local storage
           localStorage.setItem('firstName', this.firstName);
           localStorage.setItem('lastName', this.lastName);
+          localStorage.setItem('clientId', this.clientId);
           localStorage.setItem('loginStatus', 'Login Successful');
   
           if (localStorage.getItem("firstName") === "admin") {

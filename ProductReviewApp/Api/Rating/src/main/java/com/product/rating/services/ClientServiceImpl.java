@@ -22,6 +22,7 @@ public class ClientServiceImpl implements ClientService {
 
     // Dependency injection of the ClientRepository
     private final ClientRepository clientRepository;
+    private String id;
 
     // Constructor to inject the ClientRepository dependency
     public ClientServiceImpl(ClientRepository clientRepository) {
@@ -42,7 +43,7 @@ public class ClientServiceImpl implements ClientService {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
         String hashedPassword = encoder.encode(password); // Hashing the provided password
 
-        Client newClient = new Client(clientId,firstName, lastName, username, hashedPassword); // Creating a new client object
+        Client newClient = new Client(id, clientId,firstName, lastName, username, hashedPassword); // Creating a new client object
         clientRepository.save(newClient); // Saving the new client to the repository
 
         return "Client successfully created"; // Returning a success message

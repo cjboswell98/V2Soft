@@ -3,7 +3,7 @@ package com.product.rating.controller;
 
 // Import necessary classes and packages
 import com.product.rating.Jwt.JwtUtil;
-import com.product.rating.model.*;
+import com.product.rating.requestResponse.*;
 import com.product.rating.services.JwtService;
 import com.product.rating.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;

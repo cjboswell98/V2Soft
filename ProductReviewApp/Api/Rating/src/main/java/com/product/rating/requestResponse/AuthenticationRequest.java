@@ -1,4 +1,4 @@
-package com.product.rating.model;
+package com.product.rating.requestResponse;
 
 public class AuthenticationRequest {
 

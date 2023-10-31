@@ -69,6 +69,7 @@ export class ReviewListComponent implements OnInit {
   logout() {
     // Remove the login status from local storage
     localStorage.removeItem('loginStatus');
+    localStorage.removeItem('clientId');
 
     // Redirect to the login page or another destination
     this.router.navigate(['/login']);

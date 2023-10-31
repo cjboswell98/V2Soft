@@ -1,8 +1,12 @@
 package com.product.rating.services;
 
 import com.product.rating.domain.Client;
-import com.product.rating.domain.ReviewDomain;
+import com.product.rating.domain.FileData;
+import com.product.rating.domain.Image;
+import com.product.rating.domain.Review;
 import com.product.rating.repository.ClientRepository;
+import com.product.rating.repository.FileDataRepository;
+import com.product.rating.repository.ImageRepository;
 import com.product.rating.repository.ReviewRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +19,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -27,6 +34,12 @@ public class ReviewService {
     private final MongoTemplate mongoTemplate;
     private final ClientRepository clientRepository;
     private final ReviewRepository reviewRepository;
+    private final String FOLDER_PATH = "C:\\Users\\cboswell\\OneDrive - V2SOFT INC\\Desktop\\Images";
+
+    @Autowired
+    private FileDataRepository fileDataRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     public ReviewService(ClientRepository clientRepository, MongoTemplate mongoTemplate, ReviewRepository reviewRepository) {
@@ -62,15 +75,15 @@ public class ReviewService {
         }
     }
 
-    public List<ReviewDomain> viewAllReviews() {
-        List<ReviewDomain> result = new ArrayList<>();
+    public List<Review> viewAllReviews() {
+        List<Review> result = new ArrayList<>();
         Set<String> collectionNames = mongoTemplate.getCollectionNames();
 
         for (String collectionName : collectionNames) {
             try {
                 logger.info("Fetching data from collection: {}", collectionName);
                 Query query = new Query();
-                List<ReviewDomain> collectionData = mongoTemplate.find(query, ReviewDomain.class, collectionName);
+                List<Review> collectionData = mongoTemplate.find(query, Review.class, collectionName);
                 result.addAll(collectionData);
             } catch (Exception e) {
                 logger.error("Error fetching data from collection {}: {}", collectionName, e.getMessage());
@@ -79,11 +92,11 @@ public class ReviewService {
         return result;
     }
 
-    public List<ReviewDomain> viewReviewsInCollection(String collectionName) {
+    public List<Review> viewReviewsInCollection(String collectionName) {
         try {
             logger.info("Fetching data from collection: {}", collectionName);
             Query query = new Query();
-            List<ReviewDomain> collectionData = mongoTemplate.find(query, ReviewDomain.class, collectionName);
+            List<Review> collectionData = mongoTemplate.find(query, Review.class, collectionName);
             return collectionData;
         } catch (Exception e) {
             logger.error("Error fetching data from collection {}: {}", collectionName, e.getMessage());
@@ -93,10 +106,10 @@ public class ReviewService {
 
     private int reviewCounter = 1; // Initialize the counter
 
-    public String addReview(ReviewDomain newReview) {
+    public String addReview(Review newReview) {
         try {
             List<Client> clients = clientRepository.findAll(Sort.by(Sort.Direction.DESC, "clientId"));
-            List<ReviewDomain> reviews = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "reviewId"));
+            List<Review> reviews = reviewRepository.findAll(Sort.by(Sort.Direction.DESC, "reviewId"));
 
             if (!clients.isEmpty()) {
                 String clientId = clients.get(0).getClientId();
@@ -124,13 +137,48 @@ public class ReviewService {
         }
     }
 
+    public String uploadImage(MultipartFile file) throws IOException {
+
+        Image imageData = imageRepository.save(Image.builder()
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
+                .imageData(ImageUtils.compressImage(file.getBytes())).build());
+        if (imageData != null) {
+            return "file uploaded successfully: " + file.getOriginalFilename();
+        }
+       return null;
+    }
+
+    public byte[] downloadImage(String fileName) {
+        Optional<Image> dbImageData = imageRepository.findByName(fileName);
+        byte[] images = ImageUtils.decompressImage(dbImageData.get().getImageData());
+        return images;
+    }
+
+    public String uploadImagetoFileSystem(MultipartFile file) throws IOException {
+        String filePath = FOLDER_PATH + file.getOriginalFilename();
+
+        FileData fileData = fileDataRepository.save(FileData.builder()
+                .name(file.getOriginalFilename())
+                .type(file.getContentType())
+                .filePath(filePath).build());
+
+        file.transferTo(new File(filePath));
+
+        if (fileData != null) {
+            return "file uploaded successfully: " + filePath;
+        }
+
+        return null;
+    }
+
    public void deleteReview(int reviewId) {
         reviewRepository.deleteByReviewId(reviewId);
    }
-    public ResponseEntity<ReviewDomain> updateReviewById(String collectionName, String id, ReviewDomain updatedReview) {
+    public ResponseEntity<Review> updateReviewById(String collectionName, String id, Review updatedReview) {
         try {
             Query query = new Query(Criteria.where("_id").is(id));
-            ReviewDomain existingReview = mongoTemplate.findOne(query, ReviewDomain.class, collectionName);
+            Review existingReview = mongoTemplate.findOne(query, Review.class, collectionName);
 
             if (existingReview == null) {
                 return ResponseEntity.notFound().build();
@@ -162,15 +210,15 @@ public class ReviewService {
         }
     }
 
-    public List<ReviewDomain> getLatestReviews(int limit) {
+    public List<Review> getLatestReviews(int limit) {
         Query query = new Query()
                 .with(Sort.by(Sort.Order.asc("_id")))
                 .limit(limit);
-        return mongoTemplate.find(query, ReviewDomain.class, collectionName);
+        return mongoTemplate.find(query, Review.class, collectionName);
     }
 //datetime
 
-    public void logLowRatingReview(ReviewDomain review) {
+    public void logLowRatingReview(Review review) {
         // Extract the rating code from the review
         int ratingCode = review.getRateCode();
 
@@ -181,9 +229,9 @@ public class ReviewService {
         }
     }
 
-    public List<ReviewDomain> findReviewsByRateCode(int rateCode) {
+    public List<Review> findReviewsByRateCode(int rateCode) {
         Query query = new Query(Criteria.where("rateCode").is(rateCode));
-        return mongoTemplate.find(query, ReviewDomain.class, collectionName); // Use the injected collection name
+        return mongoTemplate.find(query, Review.class, collectionName); // Use the injected collection name
     }
 
 

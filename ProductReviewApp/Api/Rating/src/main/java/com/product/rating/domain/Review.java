@@ -6,9 +6,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "reviews")
-public class ReviewDomain {
+public class Review {
 
     @Id
     private int reviewId;
@@ -22,13 +23,15 @@ public class ReviewDomain {
     private String dateTime;
 
     @Field("historyList")
-    private List<ReviewDomain> historyList = new ArrayList<>();
+    private List<Review> historyList = new ArrayList<>();
 
+    @Field("images")
+    private Set<Image> reviewImages;
 
-    public ReviewDomain() {
+    public Review() {
     }
 
-    public ReviewDomain(int reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+    public Review(int reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
         this.reviewId = reviewId;
         this.clientId = clientId;
         this.productName = productName;
@@ -41,7 +44,7 @@ public class ReviewDomain {
     }
 
 
-    public void setHistoryList(List<ReviewDomain> historyList) {
+    public void setHistoryList(List<Review> historyList) {
         this.historyList.clear();
         this.historyList.addAll(historyList);
     }
@@ -118,19 +121,27 @@ public class ReviewDomain {
         this.dateTime = dateTime;
     }
 
-    public List<ReviewDomain> getHistoryList() {
+    public List<Review> getHistoryList() {
         return historyList;
     }
 
-    public void addToHistory(ReviewDomain reviewId) {
+    public void addToHistory(Review reviewId) {
         historyList.add(reviewId);
+    }
+
+    public Set<Image> getReviewImages() {
+        return reviewImages;
+    }
+
+    public void setReviewImages(Set<Image> reviewImages) {
+        this.reviewImages = reviewImages;
     }
 
     @Override
     public String toString() {
-        return "RatingDomain{" +
-                "clientId='" + clientId + '\'' +
-                ", reviewId='" + reviewId + '\'' +
+        return "Review{" +
+                "reviewId=" + reviewId +
+                ", clientId='" + clientId + '\'' +
                 ", productName='" + productName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
@@ -139,6 +150,7 @@ public class ReviewDomain {
                 ", comments='" + comments + '\'' +
                 ", dateTime='" + dateTime + '\'' +
                 ", historyList=" + historyList +
+                ", reviewImages=" + reviewImages +
                 '}';
     }
 }

@@ -1,6 +1,6 @@
 package com.product.rating.services;
 
-import com.product.rating.domain.ReviewDomain;
+import com.product.rating.domain.Review;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -20,7 +20,7 @@ public class ReviewDomainDTO {
     private String dateTime;
 
     @Field("historyList")
-    private final List<ReviewDomain> historyList = new ArrayList<>();
+    private final List<Review> historyList = new ArrayList<>();
 
     public ReviewDomainDTO() {
     }
@@ -28,7 +28,7 @@ public class ReviewDomainDTO {
     // Getters and Setters (Including Current Fields)
 
 
-    public void setHistoryList(List<ReviewDomain> historyList) {
+    public void setHistoryList(List<Review> historyList) {
         this.historyList.clear();
         this.historyList.addAll(historyList);
     }
@@ -114,12 +114,12 @@ public class ReviewDomainDTO {
     }
 
     // Get the history list
-    public List<ReviewDomain> getHistoryList() {
+    public List<Review> getHistoryList() {
         return historyList;
     }
 
     public void addToHistory() {
-        ReviewDomain newVersion = new ReviewDomain(reviewId, clientId,  productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
+        Review newVersion = new Review(reviewId, clientId,  productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
         historyList.add(newVersion);
     }
 

@@ -65,4 +65,10 @@
     <button mat-raised-button type="submit" [disabled]="!newReviewForm.valid">Submit Review</button>
     <mat-error *ngIf="newReviewForm.invalid && newReviewForm.dirty">Please fill out all fields.</mat-error>
   </form>
+
+  <div class="col-6">
+      <input type="file" multiple value="select" #selectFile
+        (change)="onFileSelected($event)"
+      >
+  </div>
   

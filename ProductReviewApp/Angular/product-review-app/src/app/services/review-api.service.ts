@@ -33,7 +33,7 @@ export class ReviewApiService {
     return this.http.get<Jwt[]>(this.viewJwt, { headers });
   }
 
-  addReview(newReview: Review): Observable<any> {
+  addReview(newReview: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/addReview`, newReview);
   }
 
