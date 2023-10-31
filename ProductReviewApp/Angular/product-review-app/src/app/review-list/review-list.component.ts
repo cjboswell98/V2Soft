@@ -30,13 +30,11 @@ export class ReviewListComponent implements OnInit {
   reviewIdSearch: string = '';
   showSortingOptions: boolean = false; // Flag to toggle sorting options
   selectedHeader: string = '';
-  isAscending: any;
   desktopView: any;
   isMobileView: boolean = false;
   loggedInUser: any;
  
-  
-  @ViewChild(MatSort) sort !:MatSort;
+  @ViewChild(MatSort) sort: MatSort | undefined;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   dataSource: any;
@@ -77,7 +75,7 @@ export class ReviewListComponent implements OnInit {
   }
 
  ngAfterViewInit(): void {
-    this.sort = this.sort;
+    this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.responseHandlerService.setActionOngoing(false);
   }
@@ -108,8 +106,9 @@ export class ReviewListComponent implements OnInit {
     this.apiService.getAllReviews().subscribe((data: Review[]) => {
       this.reviews = data;
       this.updatePagedReviews();
+      this.dataSource.data = this.pagedReviews; // Update the data source with pagedReviews
     });
-  }
+  }  
 
    // Refreshes the page by loading reviews and updating paged reviews
   refreshPage(): void {
@@ -137,10 +136,13 @@ export class ReviewListComponent implements OnInit {
   // Filters reviews based on the selected product or refreshes the page if the selection is empty
   onProductFilterChange(): void {
     if (this.selectedProduct !== '') {
-      this.pagedReviews = this.reviews.filter(review => review.productName === this.selectedProduct);
+      this.pagedReviews = this.reviews.filter(
+        (review) => review.productName === this.selectedProduct
+      );
     } else {
-      this.refreshPage();
+      this.refreshPage(); // Refresh the page to show all reviews
     }
+    this.paginator.firstPage(); // Reset the paginator to the first page
   }
 
   // Filters reviews based on the entered rate code or refreshes the page if the search input is empty
@@ -155,7 +157,7 @@ export class ReviewListComponent implements OnInit {
    // Filters reviews based on the entered review ID or refreshes the page if the search input is empty
   onReviewIdSearch(): void {
     if (this.reviewIdSearch !== '') {
-      this.pagedReviews = this.reviews.filter(review => review.reviewId.toString() === this.reviewIdSearch);
+      this.pagedReviews = this.pagedReviews.filter(review => review.reviewId.toString() === this.reviewIdSearch);
     } else {
       this.refreshPage();
     }

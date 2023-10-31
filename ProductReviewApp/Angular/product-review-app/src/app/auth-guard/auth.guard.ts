@@ -5,6 +5,7 @@ export const AuthGuard: CanActivateFn = (route, state) => {
   if (localStorage.getItem('loginStatus') === 'Login Successful') {
     return true; // Allow access to the route
   } else {
+    alert(' Enter Username & Password. (Refresh Page)')
     return false; // Deny access to the route
   }
 };

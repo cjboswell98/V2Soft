@@ -22,7 +22,6 @@
       autocomplete="username"
     />
     <div *ngIf="newReviewForm.get('username')?.hasError('minlength') && newReviewForm.get('username')?.touched" style="color: red;">
-      Must have at least 5 characters.
     </div>
   </mat-form-field>
 
@@ -38,7 +37,9 @@
     />
     <div *ngIf="newReviewForm.get('password')"></div>
   </mat-form-field>
+
+  <div *ngIf="!loginSuccess" style="color:red;">Username and Password does not match</div>
+  <div *ngIf="showWrongPasswordMessage" style="color: red;"><b>{{ errorMessage }}</b></div>
   <button type="submit" mat-raised-button color="primary">Login</button>
-  <!-- <div *ngIf="!loginSuccess" style="color: red;">
-  </div> -->
+
 </form>

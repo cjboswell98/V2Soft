@@ -17,6 +17,9 @@ export class LoginComponent {
   password: string = "";
   newReviewForm: FormGroup = new FormGroup({});
   loginSuccess: boolean = true; // Initialize loginSuccess as true
+  showWrongPasswordMessage: boolean = true;
+  errorMessage: string = '';
+
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -61,15 +64,26 @@ export class LoginComponent {
           });
         } else {
           console.error('Authentication failed:', response);
+          this.loginSuccess = false;
           // Handle authentication failure here, such as displaying an error message
         }
       },
       (error) => {
         console.error('Error:', error);
+        this.showWrongPassword(this.username);
+        // this.loginSuccess = false;
         // Handle error
       }
     );
   }
+
+  showWrongPassword(username: string) {
+    this.showWrongPasswordMessage = true;
+    this.loginSuccess = false;
+    this.errorMessage = `${username}`;
+  }
+  
+
   
   fetchFirstNameAndLastName(username: string, callback: () => void) {
     this.http.get<Client[]>(`http://localhost:8080/reviews/viewClients`).subscribe(
