@@ -62,7 +62,7 @@ public class ClientServiceImpl implements ClientService {
 
         if (clientOptional.isPresent()) { // Checking if the client is present
             Client client = clientOptional.get(); // Extracting the client from the Optional
-            
+
             // Verify if the provided password matches the hashed password in the database
             PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
             String hashedPassword = client.getPassword(); // Retrieving the hashed password from the client

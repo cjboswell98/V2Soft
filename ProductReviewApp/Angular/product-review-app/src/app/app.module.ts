@@ -22,6 +22,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { AdminReviewListComponent } from './admin-review-list/admin-review-list.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './auth-guard/auth.guard';
+import { MatGridListModule } from '@angular/material/grid-list';
+
 
 const routes: Routes = [  // Defining an array of route configurations
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -51,7 +53,7 @@ const routes: Routes = [  // Defining an array of route configurations
     ReactiveFormsModule,  // The module for reactive forms in the application
     RouterModule.forRoot(routes),  // The module for managing application routes
     BrowserAnimationsModule,  // The module for providing support for animations
-    MatToolbarModule, MatIconModule, MatButtonModule, MatSelectModule,MatInputModule, MatCardModule, MatTableModule, MatSortModule, MatPaginatorModule // Angular Material modules for various UI components
+    MatToolbarModule, MatGridListModule, MatIconModule, MatButtonModule, MatSelectModule,MatInputModule, MatCardModule, MatTableModule, MatSortModule, MatPaginatorModule // Angular Material modules for various UI components
   ],
   exports: [RouterModule, MatToolbarModule, MatIconModule, MatButtonModule, MatInputModule, MatCardModule],  // Array of modules to export from this module
   providers: [],  // Array of services provided by this module

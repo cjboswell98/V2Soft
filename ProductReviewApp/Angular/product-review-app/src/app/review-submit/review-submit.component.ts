@@ -6,6 +6,11 @@ import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, NgFor
 import { Router } from '@angular/router';
 import { FileHandle } from '../interfaces/file-handle.model';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { forkJoin } from 'rxjs';
+import { MatGridListModule } from '@angular/material/grid-list';
+
 
 
 @Component({
@@ -15,6 +20,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class ReviewSubmitComponent implements OnInit {  // Definition of the ReviewSubmitComponent class which implements OnInit interface
   reviews: Review[] = [];
+  selectedFiles: File[] = []; // Define selectedFiles as an array of File objects
 
   newReview: Review = {  // Object of type Review for holding the new review data
     reviewId: '',  // Initialize the reviewId to an empty string
@@ -31,7 +37,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
 
   newReviewForm: FormGroup = new FormGroup({});  // Initialize the newReviewForm as a FormGroup
 
-  constructor(private sanitizer: DomSanitizer, private reviewApiService: ReviewApiService, private clientService: ClientService, private router: Router) {}  // Constructor for the ReviewSubmitComponent, injecting the required services
+  constructor(private http: HttpClient, private sanitizer: DomSanitizer, private reviewApiService: ReviewApiService, private clientService: ClientService, private router: Router) {}  // Constructor for the ReviewSubmitComponent, injecting the required services
 
   ngOnInit(): void {  // Angular lifecycle hook OnInit
     this.newReviewForm = new FormGroup({  // Initialize the newReviewForm FormGroup with form controls
@@ -68,66 +74,98 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     this.router.navigate(['/login']);
   }
 
-  submitReview(): void {
-    
-    const reviewFormData = this.prepareFormData(this.newReview);
-
-    if (this.newReviewForm.valid) {
-      const currentDate = new Date();
-      const formattedDate = currentDate.toLocaleString();
-
-      this.newReviewForm.patchValue({ dateTime: formattedDate });
-      // Retrieve the first name and last name from local storage
-      const storedFirstName = localStorage.getItem('firstName');
-      const storedLastName = localStorage.getItem('lastName');
+  uploadImages(files: File[]): Observable<string[]> {
+    // Create an array to hold the image upload responses
+    const imageUploadResponses: Observable<string>[] = [];
   
-      if (storedFirstName && storedLastName) {
-        // Update the new review object with the retrieved names
-        this.newReview.firstName = storedFirstName;
-        this.newReview.lastName = storedLastName;
-      }
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('image', file);
   
-      this.reviewApiService.addReview(this.newReviewForm.value).subscribe(
-        (response) => {
-          console.log('Review submitted successfully:', response);
-          // Save the names to the database along with the review
-          this.reviewApiService.addReview({
-            ...this.newReviewForm.value,
-            firstName: storedFirstName,
-            lastName: storedLastName
-          }).subscribe(
-            (response) => {
-              console.log('Names saved along with review:', response);
-            },
-            (error) => {
-              console.error('Error saving names with review:', error);
-            }
-          );
-        },
-        (error) => {
-          console.error('Error submitting review:', error);
-        }
+      // Push each upload response observable to the array
+      imageUploadResponses.push(
+        this.http.post('http://localhost:8080/reviews/image', formData, { responseType: 'text' })
       );
-      this.loadReviews();
-      this.router.navigate(['/review-list']);
     }
+  
+    // Use forkJoin to execute all image uploads in parallel and wait for all responses
+    return forkJoin(imageUploadResponses);
   }
-
-  onFileSelected(event: any) {
-    if(event.target.files) {
-      const file = event.target.files[0];
-
-      const fileHandle: FileHandle = {
-        file: file,
-        url: this.sanitizer.bypassSecurityTrustUrl(
-          window.URL.createObjectURL(file)
-        )
+  
+  
+  submitReview(): void {
+    if (this.newReviewForm.valid) {
+      // Check if an image file is selected
+      if (this.selectedFiles) {
+        this.uploadImages(this.selectedFiles).subscribe(
+          (imageUploadResponse) => {
+            // Image uploaded successfully, you can use imageUploadResponse to get the image reference or URL
+            
+            // Now, proceed to submit the review
+            this.processReviewSubmission(imageUploadResponse);
+          },
+          (imageUploadError) => {
+            console.error('Error uploading image:', imageUploadError);
+            // Handle errors during image upload
+          }
+        );
+      } else {
+        // If no image is selected, proceed to submit the review without an image
+        this.processReviewSubmission(null);
       }
-
-      this.newReview.reviewImages.push(fileHandle);
     }
   }
+  
+  processReviewSubmission(imageReferences: string[] | null): void {
+    const reviewFormData = this.prepareFormData(this.newReview);
+  
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleString();
+  
+    this.newReviewForm.patchValue({ dateTime: formattedDate });
+  
+    const storedFirstName = localStorage.getItem('firstName');
+    const storedLastName = localStorage.getItem('lastName');
+  
+    if (storedFirstName && storedLastName) {
+      this.newReview.firstName = storedFirstName;
+      this.newReview.lastName = storedLastName;
+    }
+  
+    // Include the image references in the review data if available
+    if (imageReferences && imageReferences.length > 0) {
+      this.newReviewForm.patchValue({ imageReferences: imageReferences });
+    }
+  
+    this.reviewApiService.addReview(this.newReviewForm.value).subscribe(
+      (response) => {
+        console.log('Review submitted successfully:', response);
+      },
+      (error) => {
+        console.error('Error submitting review:', error);
+      }
+    );
+  
+    this.loadReviews();
+    this.router.navigate(['/review-list']);
+  }
+  
 
+  onFilesSelected(event: Event) {
+    const inputElement = event.target as HTMLInputElement;
+    if (inputElement.files && inputElement.files.length > 0) {
+      // Store the selected files in the selectedFiles array
+      for (let i = 0; i < inputElement.files.length; i++) {
+        this.selectedFiles.push(inputElement.files[i]);
+      }
+    }
+  }
+  
+  getSafeURL(file: File): any {
+    return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
+  }
+  
+  
   prepareFormData(newReview: Review): FormData {
     const formData = new FormData();
 

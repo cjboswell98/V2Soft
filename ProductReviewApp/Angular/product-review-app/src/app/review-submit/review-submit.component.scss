@@ -26,6 +26,12 @@ body {
   color: var(--mat-toolbar-container-text-color);
 }
 
+.mat-mdc-card-header {
+  display: flex;
+  padding: 16px 16px 0;
+  justify-content: center;
+}
+
 h2 {
   color: #333;
   font-size: 24px;
@@ -38,6 +44,7 @@ form {
   flex-direction: column;
   align-items: center;
   margin-top: 50px;
+  margin-bottom: 20px;
   
 
   div {
@@ -52,6 +59,25 @@ form {
       border-radius: 5px;
     }
   }
+
+/* Style to place image previews side by side */
+.image-container {
+  margin: 5px;
+  text-align: center;
+}
+
+
+.mat-mdc-card-content:last-child {
+    padding-bottom: 96px;
+}
+/* Style to make delete buttons appear underneath */
+.delete-container {
+  display: block;
+  text-align: center;
+  margin-top: 5px;
+}
+
+
 
   button {
     padding: 10px 20px;
@@ -70,4 +96,26 @@ form {
       background-color: #3f51b5;
     }
   }
+
+  /* Style the container for the form sections */
+.form-container {
+  display: flex;
+  max-width: 800px; /* Adjust the maximum width as needed */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Style the Add Review section (adjust the width as needed) */
+.form-content {
+  flex: 1; /* Take available space within the container */
+  padding: 20px; /* Add some spacing */
+}
+
+/* Style the Upload Image section (adjust the width as needed) */
+.upload-image {
+  flex: 1; /* Take available space within the container */
+  padding: 20px; /* Add some spacing */
+}
+
+/* Optionally, adjust the styles for other elements as needed */
+
 }
