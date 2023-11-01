@@ -11,6 +11,9 @@
 <h2>Register</h2>
 <form (ngSubmit)="onSubmit()" autocomplete="on" #registerForm="ngForm">
 
+  <div *ngIf="errorMessage" style="color: red">{{ errorMessage }}</div>
+
+
   <mat-form-field appearance="outline">
     <mat-label>First Name</mat-label>
     <input matInput [(ngModel)]="firstName" name="firstName" required>

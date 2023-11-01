@@ -15,17 +15,19 @@ public class Client {
     String lastName;
     String username;
     String password;
+    String role;
 
     public Client() {
     }
 
-    public Client(String id, String clientId, String firstName, String lastName, String username, String password) {
+    public Client(String id, String clientId, String firstName, String lastName, String username, String password, String role) {
         this.id = id;
         this.clientId = clientId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
     public String getId() {
@@ -74,5 +76,13 @@ public class Client {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

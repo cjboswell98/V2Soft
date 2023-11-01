@@ -15,6 +15,7 @@ export class LoginComponent {
   lastName: string = '';
   username: string = "";
   password: string = "";
+  role: string = '';
   newReviewForm: FormGroup = new FormGroup({});
   loginSuccess: boolean = true; // Initialize loginSuccess as true
   showWrongPasswordMessage: boolean = true;
@@ -28,7 +29,8 @@ export class LoginComponent {
     this.newReviewForm = new FormGroup({
       clientId: new FormControl(localStorage.getItem('clientId')),
       username: new FormControl('', [Validators.required, this.validateUsername()]), // Use custom validator for username
-      password: new FormControl('', [Validators.required, this.validatePassword()]) // Use custom validator for password
+      password: new FormControl('', [Validators.required, this.validatePassword()]), // Use custom validator for password
+      role: new FormControl(localStorage.getItem('role')),
     });
   }
 
@@ -44,7 +46,8 @@ export class LoginComponent {
     const body = {
       clientId: this.clientId,
       username: this.username,
-      password: this.password
+      password: this.password,
+      role: this.role
     };
   
     this.http.post('http://localhost:8080/reviews/verifyLogin', body, { responseType: 'text' }).subscribe(
@@ -52,15 +55,15 @@ export class LoginComponent {
         if (response === 'Login successful') {
           console.log('Login successful', response);
   
-          // Fetch the first name and last name using the username
-          this.fetchFirstNameAndLastName(this.username, () => {
+          // Now that the client is verified on the endpoint, fetch the client's role
+          this.fetchClientRole(this.username, () => {
             // Save the login status and first name in local storage
             localStorage.setItem('loginStatus', 'Login Successful');
             localStorage.setItem('firstName', this.firstName);
             localStorage.setItem('lastName', this.lastName);
             localStorage.setItem('clientId', this.clientId);
   
-            if (this.firstName === "admin") {
+            if (this.role === "ADMIN") {
               this.router.navigate(['/admin-review-list']);
             } else {
               this.router.navigate(['/home']);
@@ -75,11 +78,31 @@ export class LoginComponent {
       (error) => {
         console.error('Error:', error);
         this.showWrongPassword(this.username);
-        // this.loginSuccess = false;
         // Handle error
       }
     );
   }
+  
+  fetchClientRole(username: string, callback: () => void) {
+    this.http.get<Client[]>(`http://localhost:8080/reviews/viewClients`).subscribe(
+      (clients) => {
+        const matchingClient = clients.find(client => client.username === username);
+        if (matchingClient) {
+          this.firstName = matchingClient.firstName;
+          this.lastName = matchingClient.lastName;
+          this.role = matchingClient.role; // Fetch the client's role
+        }
+        callback();
+      },
+      (error) => {
+        console.error('Failed to fetch client data:', error);
+        // Handle error
+        callback();
+      }
+    );
+  }
+  
+  
 
   showWrongPassword(username: string) {
     this.showWrongPasswordMessage = true;

@@ -183,7 +183,8 @@ public class ProductController {
         String lastName = request.get("lastName");
         String username = request.get("username");
         String password = request.get("password");
-        return clientService.createNewClient(firstName, lastName,username, password);
+        String role = request.get("role");
+        return clientService.createNewClient(firstName, lastName,username, password, role);
     }
 
     // REST API endpoint to get all clients
@@ -199,8 +200,9 @@ public class ProductController {
         String lastName = request.get("lastName");
         String username = request.get("username");
         String password = request.get("password");
+        String role = request.get("role");
 
-        if (clientService.verifyLoginInformation(firstName, lastName, username, password)) {
+        if (clientService.verifyLoginInformation(firstName, lastName, username, password, role)) {
             return ResponseEntity.ok("Login successful");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");

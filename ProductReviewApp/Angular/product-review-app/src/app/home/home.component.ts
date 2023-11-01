@@ -14,6 +14,7 @@ export class HomeComponent {
   logout() {
     // Remove the login status from local storage
     localStorage.removeItem('loginStatus');
+    localStorage.removeItem('role');
 
     // Redirect to the login page or another destination
     this.router.navigate(['/login']);

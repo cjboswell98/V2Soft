@@ -13,6 +13,8 @@ export class RegisterComponent {
   lastName: string = '';
   username: string = '';
   password: string = '';
+  role: string = '';
+  errorMessage: string = '';
   passwordTouched = false;
 
 
@@ -35,7 +37,8 @@ export class RegisterComponent {
       firstName: this.firstName,
       lastName: this.lastName,
       username: this.username,
-      password: this.password
+      password: this.password,
+      role: this.role
     };
   
     // Check if the username already exists
@@ -58,6 +61,12 @@ export class RegisterComponent {
   }
   
   registerUser(body: any) {
+    // Check if the username is "admin"
+    if (body.role === "admin") {
+      this.errorMessage = "You cannot create an admin user.";
+      return; // Exit the function without making the registration request
+    }
+  
     // Make the registration request
     this.http.post('http://localhost:8080/reviews/newClient', body, { responseType: 'text' }).subscribe(
       (response) => {
@@ -68,9 +77,10 @@ export class RegisterComponent {
           localStorage.setItem('firstName', this.firstName);
           localStorage.setItem('lastName', this.lastName);
           localStorage.setItem('clientId', this.clientId);
+          localStorage.setItem('role', this.role);
           localStorage.setItem('loginStatus', 'Login Successful');
   
-          if (localStorage.getItem("firstName") === "admin") {
+          if (localStorage.getItem("role") === "ADMIN") {
             this.router.navigate(['/admin-review-list']);
           } else {
             // Redirect to another route if not "admin"

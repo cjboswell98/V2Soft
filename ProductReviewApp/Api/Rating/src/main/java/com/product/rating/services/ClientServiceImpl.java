@@ -31,7 +31,7 @@ public class ClientServiceImpl implements ClientService {
 
     // Method to create a new client with a unique ID, username, and hashed password
     @Override
-    public String createNewClient(String firstName, String lastName, String username, String password) {
+    public String createNewClient(String firstName, String lastName, String username, String password, String role) {
         // Generate a random salt, ID, hash the password, then save them to a new client
         SecureRandom random = new SecureRandom(); // Initializing SecureRandom for generating random bytes
         byte[] saltBytes = new byte[16]; // Initializing a byte array for salt
@@ -43,20 +43,26 @@ public class ClientServiceImpl implements ClientService {
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
         String hashedPassword = encoder.encode(password); // Hashing the provided password
 
-        Client newClient = new Client(id, clientId,firstName, lastName, username, hashedPassword); // Creating a new client object
+        // Set the role to "USER" by default if not provided
+        if (role == null || role.isEmpty()) {
+            role = "USER";
+        }
+
+        Client newClient = new Client(id, clientId, firstName, lastName, username, hashedPassword, role); // Creating a new client object
         clientRepository.save(newClient); // Saving the new client to the repository
 
         return "Client successfully created"; // Returning a success message
     }
 
+
     // Method to verify login information based on the provided username and password
     @Override
-    public boolean verifyLoginInformation(String firstName, String lastName, String username, String password) {
+    public boolean verifyLoginInformation(String firstName, String lastName, String username, String password, String role) {
         Optional<Client> clientOptional = clientRepository.findByUsername(username); // Retrieving the client based on the username from the repository
 
         if (clientOptional.isPresent()) { // Checking if the client is present
             Client client = clientOptional.get(); // Extracting the client from the Optional
-
+            
             // Verify if the provided password matches the hashed password in the database
             PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder(); // Creating a PasswordEncoder instance
             String hashedPassword = client.getPassword(); // Retrieving the hashed password from the client
@@ -68,6 +74,7 @@ public class ClientServiceImpl implements ClientService {
             return false; // Returning false to indicate the failure
         }
     }
+
 
     // Method to find a client based on the provided ID
     @Override
