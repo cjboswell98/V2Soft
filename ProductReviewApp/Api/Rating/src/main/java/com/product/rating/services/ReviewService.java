@@ -137,17 +137,20 @@ public class ReviewService {
         }
     }
 
-    public String uploadImage(MultipartFile file) throws IOException {
-
+    public String uploadImage(MultipartFile file) throws IOException { // Corrected method name
         Image imageData = imageRepository.save(Image.builder()
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
                 .imageData(ImageUtils.compressImage(file.getBytes())).build());
+
         if (imageData != null) {
-            return "file uploaded successfully: " + file.getOriginalFilename();
+            return "File uploaded successfully: " + file.getOriginalFilename();
         }
-       return null;
+
+        return null;
     }
+
+
 
     public byte[] downloadImage(String fileName) {
         Optional<Image> dbImageData = imageRepository.findByName(fileName);

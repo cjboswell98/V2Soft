@@ -21,6 +21,7 @@ import { MatGridListModule } from '@angular/material/grid-list';
 export class ReviewSubmitComponent implements OnInit {  // Definition of the ReviewSubmitComponent class which implements OnInit interface
   reviews: Review[] = [];
   selectedFiles: File[] = []; // Define selectedFiles as an array of File objects
+  fileTypeError: string = '';
 
   newReview: Review = {  // Object of type Review for holding the new review data
     reviewId: '',  // Initialize the reviewId to an empty string
@@ -33,6 +34,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     comments: '',  // Initialize the comments to an empty string
     dateTime: '',  // Initialize the dateTime to an empty string
     reviewImages: []
+    
   };
 
   newReviewForm: FormGroup = new FormGroup({});  // Initialize the newReviewForm as a FormGroup
@@ -150,15 +152,52 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     this.router.navigate(['/review-list']);
   }
   
-
-  onFilesSelected(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    if (inputElement.files && inputElement.files.length > 0) {
-      // Store the selected files in the selectedFiles array
-      for (let i = 0; i < inputElement.files.length; i++) {
-        this.selectedFiles.push(inputElement.files[i]);
+  onFilesSelected(event: any) {
+    const files: FileList | null = event.target?.files ?? null;
+  
+    if (files && files.length !== undefined) { // Use `!== undefined` check
+      const fileCount = files.length;
+  
+      if (fileCount > 2) {
+        this.fileTypeError = 'Only 2 files are allowed.';
+        this.selectedFiles = []; // Clear the selected files
+      } else {
+        this.fileTypeError = ''; // Reset the error message
+  
+        const allowedTypes = ['.png', '.jpg', '.jpeg', '.pdf'];
+        
+  
+        for (let i = 0; i < fileCount; i++) { // Use `fileCount`
+          const selectedFile = files[i];
+          const fileExtension = selectedFile?.name.split('.').pop()?.toLowerCase();
+  
+          if (!fileExtension || !allowedTypes.includes(`.${fileExtension}`)) {
+            this.fileTypeError = 'Only PNG, JPG, JPEG, and PDF files are allowed.';
+            
+            break;
+          }
+  
+          this.selectedFiles.push(selectedFile);
+  
+          if (this.selectedFiles.length >= 2) {
+            break; // Stop after adding 2 files
+          }
+        }
       }
     }
+  }
+  
+  
+  
+  
+  
+
+
+  
+
+ removeImages(index: number) {
+      this.selectedFiles.splice(index, 1); // Remove the image at the specified index
+    
   }
   
   getSafeURL(file: File): any {

@@ -67,7 +67,7 @@
   </form>
 
   <mat-grid-list cols="1" rowHeight="7:1">
-    <mat-grid-tile>
+    <mat-grid-tile style="margin-top: -43px; position: inherit; top: 20px; align-items: normal">
       <mat-card style="width: 400px; margin: 50px auto;"> <!-- Adjust the width as needed -->
         <mat-card-header style="margin-bottom: -12px;">
           <mat-card-title style="text-align: center;">Upload Image</mat-card-title>
@@ -76,25 +76,30 @@
           <div style="text-align: center;">
             <div class="file-upload">
               <div style="padding: -3px;" class="file-upload-input">
-                <input type="file" multiple #selectFile (change)="onFilesSelected($event)" style="display: none" id="fileInput">
+                <input type="file" accept=".png, .jpg, .jpeg, .pdf" #selectFile (change)="onFilesSelected($event)" style="display: none" id="fileInput">
+                  <!-- <div style="margin-top: 15px; color: red;" *ngIf="fileTypeError" class="error-message">Only PNG, JPG, JPEG, and PDF files are allowed.</div> -->
+                  <div *ngIf="selectedFiles.length > 0" class="file-preview">
+                  <!-- Selected File: {{ selectedFiles[0].name }} -->
+                  </div>
                 <button mat-button color="primary" (click)="selectFile.click()">Choose Files</button>
               </div>
             </div>
   
             <!-- Image previews with delete buttons -->
             <div class="image-previews">
-              <div class="preview" *ngFor="let file of selectedFiles" style="display: inline-block;
+              <div class="preview" *ngFor="let file of selectedFiles; let i = index;" style="display: inline-block;
               margin-left: 20px;
               position: relative;
               margin-right: -35px;">
                 <img [src]="getSafeURL(file)" width="100" height="100">
-                <button mat-button style="bottom: -20px; left: -80px;" color="warn" class="delete-button" >Delete</button>
+                <button mat-button style="bottom: -20px; left: -80px;" color="warn" (click)="removeImages(i)" class="delete-button" >Delete</button>
               </div>
             </div>
           </div>
+          <div style="text-align: center; margin-top: 12px; color: red;" *ngIf="fileTypeError" class="error-message">Only PNG, JPG, JPEG, and PDF files are allowed.</div>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
   </mat-grid-list>
 
-  <h1>  .</h1>
+

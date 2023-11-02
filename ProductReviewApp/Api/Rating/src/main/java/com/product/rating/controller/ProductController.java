@@ -147,11 +147,19 @@ public class ProductController {
     }
 
     @PostMapping("/image")
-    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
-       String uploadImage = reviewService.uploadImage(file);
-       return ResponseEntity.status(HttpStatus.OK)
-               .body(uploadImage);
+    public ResponseEntity<?> uploadImages(@RequestParam("image") List<MultipartFile> files) throws IOException {
+        List<String> uploadResults = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            String uploadImage = reviewService.uploadImage(file); // Corrected method name
+            uploadResults.add(uploadImage);
+        }
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(uploadResults);
     }
+
+
 
     @GetMapping("/{fileName}")
     public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
