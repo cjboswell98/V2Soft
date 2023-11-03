@@ -11,6 +11,21 @@
   color: var(--mat-toolbar-container-text-color);
 }
 
+table[_ngcontent-ng-c1978884002] th[_ngcontent-ng-c1978884002], table[_ngcontent-ng-c1978884002] td[_ngcontent-ng-c1978884002] {
+  border: 1px solid #f5f5f5;
+  padding: 8px;
+  text-align: center;
+}
+
+.custom-sort-header-content {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  margin-left: 25px;
+}
+
+
+
 
 .space-buttons {
   flex: 1; /* This will push the button to the right */

@@ -67,36 +67,54 @@
   </form>
 
   <mat-grid-list cols="1" rowHeight="7:1">
-    <mat-grid-tile style="margin-top: -43px; position: inherit; top: 20px; align-items: normal">
-      <mat-card style="width: 400px; margin: 50px auto;"> <!-- Adjust the width as needed -->
+    <mat-grid-tile style="margin-top: -43px; position: inherit; top: -40px; align-items: normal">
+      <mat-card style="height: 300px; width: 400px; margin: 50px auto;"> <!-- Adjust the width as needed -->
         <mat-card-header style="margin-bottom: -12px;">
-          <mat-card-title style="text-align: center;">Upload Image</mat-card-title>
+          <mat-card-title style="text-align: center;">Drag and Drop a File or Browse Below</mat-card-title>
         </mat-card-header >
         <mat-card-content style="margin-bottom: 30px; padding-bottom: 0px;">
           <div style="text-align: center;">
             <div class="file-upload">
               <div style="padding: -3px;" class="file-upload-input">
+
+                <div style="height: 214px;
+                min-width: 370px;
+                display: table;
+                background-color: #eee ;
+                margin-top: 10px;
+                z-index: -1;
+                border: dashed 1px #aaa;
+                border-radius: 10px;
+                " class="dropzone"
+                appDrag
+                (files)="fileDropped($event)">
+
+                </div>
+                
+
+
                 <input type="file" accept=".png, .jpg, .jpeg, .pdf" #selectFile (change)="onFilesSelected($event)" style="display: none" id="fileInput">
                   <!-- <div style="margin-top: 15px; color: red;" *ngIf="fileTypeError" class="error-message">Only PNG, JPG, JPEG, and PDF files are allowed.</div> -->
                   <div *ngIf="selectedFiles.length > 0" class="file-preview">
                   <!-- Selected File: {{ selectedFiles[0].name }} -->
                   </div>
                 <button mat-button color="primary" (click)="selectFile.click()">Choose Files</button>
+                <!-- <button mat-button color="primary" (click)="uploadImages(selectedFiles)">Upload Image</button> -->
               </div>
             </div>
   
             <!-- Image previews with delete buttons -->
             <div class="image-previews">
-              <div class="preview" *ngFor="let file of selectedFiles; let i = index;" style="display: inline-block;
-              margin-left: 20px;
-              position: relative;
-              margin-right: -35px;">
+              <div class="preview" *ngFor="let file of selectedFiles; let i = index;" style="display: inline-block; margin-left: 20px; position: relative; margin-right: -35px;z-index: 1;     top: -200px;">
                 <img [src]="getSafeURL(file)" width="100" height="100">
-                <button mat-button style="bottom: -20px; left: -80px;" color="warn" (click)="removeImages(i)" class="delete-button" >Delete</button>
+                <button mat-button style="bottom: -20px; left: -80px;" color="warn" (click)="removeImages(i)" class="delete-button">Delete</button>
               </div>
             </div>
+            <div style="text-align: center; margin-top: -100px; color: red;" class="error-message" *ngIf="fileTypeErrorUnsupported">Only PNG, JPG, JPEG, and PDF files are allowed.</div>
+            <div style="text-align: center; margin-top: -100px; color: red;" class="error-message" *ngIf="fileTypeErrorLimit">You can select up to 2 files.</div>
           </div>
-          <div style="text-align: center; margin-top: 12px; color: red;" *ngIf="fileTypeError" class="error-message">Only PNG, JPG, JPEG, and PDF files are allowed.</div>
+
+
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

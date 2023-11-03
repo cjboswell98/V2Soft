@@ -161,6 +161,7 @@ public class ProductController {
 
 
 
+
     @GetMapping("/{fileName}")
     public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
         byte[] imageData = reviewService.downloadImage(fileName);

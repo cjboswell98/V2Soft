@@ -137,14 +137,18 @@ public class ReviewService {
         }
     }
 
+    
+
     public String uploadImage(MultipartFile file) throws IOException { // Corrected method name
+        String imageId= UUID.randomUUID().toString();
         Image imageData = imageRepository.save(Image.builder()
+                        .id(imageId)
                 .name(file.getOriginalFilename())
                 .type(file.getContentType())
                 .imageData(ImageUtils.compressImage(file.getBytes())).build());
 
         if (imageData != null) {
-            return "File uploaded successfully: " + file.getOriginalFilename();
+            return imageId;
         }
 
         return null;
@@ -153,10 +157,21 @@ public class ReviewService {
 
 
     public byte[] downloadImage(String fileName) {
-        Optional<Image> dbImageData = imageRepository.findByName(fileName);
-        byte[] images = ImageUtils.decompressImage(dbImageData.get().getImageData());
-        return images;
+        Query query = new Query(Criteria.where("name").is(fileName));
+        query.limit(1); // Limit the result to one document
+
+        List<Image> dbImages = mongoTemplate.find(query, Image.class, collectionName);
+
+        if (!dbImages.isEmpty()) {
+            Image firstImage = dbImages.get(0);
+            return ImageUtils.decompressImage(firstImage.getImageData());
+        } else {
+            // Handle the case where no images with the specified name were found
+            return null; // You can return null or handle it based on your requirements.
+        }
     }
+
+
 
     public String uploadImagetoFileSystem(MultipartFile file) throws IOException {
         String filePath = FOLDER_PATH + file.getOriginalFilename();

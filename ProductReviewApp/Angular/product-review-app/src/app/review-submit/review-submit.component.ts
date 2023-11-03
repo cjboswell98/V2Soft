@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Review } from '../interfaces/Review';
 import { ReviewApiService } from '../services/review-api.service';
 import { ClientService } from '../services/client.service';
-import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, NgForm } from '@angular/forms';
+import { FormGroup, FormControl, Validators, ValidatorFn, AbstractControl, NgForm, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FileHandle } from '../interfaces/file-handle.model';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 import { MatGridListModule } from '@angular/material/grid-list';
 
@@ -21,7 +21,10 @@ import { MatGridListModule } from '@angular/material/grid-list';
 export class ReviewSubmitComponent implements OnInit {  // Definition of the ReviewSubmitComponent class which implements OnInit interface
   reviews: Review[] = [];
   selectedFiles: File[] = []; // Define selectedFiles as an array of File objects
-  fileTypeError: string = '';
+  fileTypeErrorUnsupported: boolean = false;
+  fileTypeErrorLimit: boolean = false;
+
+  
 
   newReview: Review = {  // Object of type Review for holding the new review data
     reviewId: '',  // Initialize the reviewId to an empty string
@@ -33,29 +36,46 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     rateCode: 0,  // Initialize the rateCode to 0
     comments: '',  // Initialize the comments to an empty string
     dateTime: '',  // Initialize the dateTime to an empty string
-    reviewImages: []
+    reviewImages: [],
+    reviewImage: '',
     
   };
 
   newReviewForm: FormGroup = new FormGroup({});  // Initialize the newReviewForm as a FormGroup
 
-  constructor(private http: HttpClient, private sanitizer: DomSanitizer, private reviewApiService: ReviewApiService, private clientService: ClientService, private router: Router) {}  // Constructor for the ReviewSubmitComponent, injecting the required services
+  constructor(
+    private http: HttpClient, 
+    private sanitizer: DomSanitizer, 
+    private reviewApiService: ReviewApiService, 
+    private clientService: ClientService, 
+    private router: Router,
+    private formBuilder: FormBuilder, ) {
+      this.newReviewForm = this.formBuilder.group({
+        // Your other form controls
+        reviewImages: [], // Initialize as an empty array
+      });
+    }  // Constructor for the ReviewSubmitComponent, injecting the required services
 
-  ngOnInit(): void {  // Angular lifecycle hook OnInit
-    this.newReviewForm = new FormGroup({  // Initialize the newReviewForm FormGroup with form controls
+ ngOnInit(): void {
+  // Retrieve the image file names from local storage
+  const imageFileNames = localStorage.getItem('imageFileNames');
 
-      clientId: new FormControl(localStorage.getItem('clientId')),
-      productName: new FormControl('', Validators.required),  // Add the product name form control with necessary validators
-      firstName: new FormControl(localStorage.getItem('firstName')),  // Add the first name form control with necessary validators
-      lastName: new FormControl(localStorage.getItem('lastName')),  // Add the last name form control with necessary validators
-      zipCode: new FormControl('', [Validators.required, this.validateZipCode()]),  // Add the zip code form control with necessary validators
-      rateCode: new FormControl('', Validators.required),  // Add the rate code form control with necessary validators
-      comments: new FormControl(''),  // Add the comments form control with necessary validators
-      dateTime: new FormControl(''),  // Add the dateTime form control
-    });
+  
 
-    this.fetchMostRecentClient();  // Call the function to fetch the most recent client
-  }
+  this.newReviewForm = new FormGroup({
+    clientId: new FormControl(localStorage.getItem('clientId')),
+    productName: new FormControl('', Validators.required),
+    firstName: new FormControl(localStorage.getItem('firstName')),
+    lastName: new FormControl(localStorage.getItem('lastName')),
+    zipCode: new FormControl('', [Validators.required, this.validateZipCode()]),
+    rateCode: new FormControl('', Validators.required),
+    comments: new FormControl(''),
+    dateTime: new FormControl(''),
+    reviewImage: new FormControl(localStorage.getItem('imageFileData'))
+  });
+
+  this.fetchMostRecentClient();
+}
 
   fetchMostRecentClient(): void {  // Method to fetch the most recent client
     this.clientService.getMostRecentClient().subscribe(  // Subscribe to the client service for the most recent client
@@ -71,55 +91,68 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   logout() {
     // Remove the login status from local storage
     localStorage.removeItem('loginStatus');
+    localStorage.removeItem('imageFileNames');
+    localStorage.removeItem('imageFileData');
 
     // Redirect to the login page or another destination
     this.router.navigate(['/login']);
   }
 
-  uploadImages(files: File[]): Observable<string[]> {
-    // Create an array to hold the image upload responses
-    const imageUploadResponses: Observable<string>[] = [];
+  async uploadImages(selectedFiles: File[]): Promise<void> {
+    const imageFileData: any[] = [];
   
-    for (const file of files) {
+    for (const file of selectedFiles) {
       const formData = new FormData();
       formData.append('image', file);
   
-      // Push each upload response observable to the array
-      imageUploadResponses.push(
-        this.http.post('http://localhost:8080/reviews/image', formData, { responseType: 'text' })
-      );
+      // Log the file being uploaded
+      console.log(file.name);
+  
+      // Store the image information in the array
+      imageFileData.push({
+        name: file.name,
+        // Include other relevant fields based on your database structure
+      });
+
+      localStorage.setItem('imageFileData', JSON.stringify(imageFileData));
+  
+      // Send the image upload request and store the response
+      const uploadResponse = this.http.post<FileHandle>('http://localhost:8080/reviews/image', formData);
+      // Wait for the response before proceeding
+      await uploadResponse.toPromise();
     }
   
-    // Use forkJoin to execute all image uploads in parallel and wait for all responses
-    return forkJoin(imageUploadResponses);
+    // Save the image information to local storage
+    localStorage.setItem('imageFileData', JSON.stringify(imageFileData));
   }
   
+
   
-  submitReview(): void {
+  
+  
+  
+  async submitReview(): Promise<void> {
     if (this.newReviewForm.valid) {
-      // Check if an image file is selected
-      if (this.selectedFiles) {
-        this.uploadImages(this.selectedFiles).subscribe(
-          (imageUploadResponse) => {
-            // Image uploaded successfully, you can use imageUploadResponse to get the image reference or URL
-            
-            // Now, proceed to submit the review
-            this.processReviewSubmission(imageUploadResponse);
-          },
-          (imageUploadError) => {
-            console.error('Error uploading image:', imageUploadError);
-            // Handle errors during image upload
-          }
-        );
+      if (this.selectedFiles && this.selectedFiles.length > 0) {
+        try {
+          await this.uploadImages(this.selectedFiles);
+          // Now, the image data is saved, and you can proceed to submit the review
+          this.processReviewSubmission();
+        } catch (error) {
+          console.error('Error saving image data:', error);
+        }
       } else {
-        // If no image is selected, proceed to submit the review without an image
-        this.processReviewSubmission(null);
+        this.processReviewSubmission();
       }
     }
   }
   
-  processReviewSubmission(imageReferences: string[] | null): void {
+  
+  
+  
+  processReviewSubmission(): void {
     const reviewFormData = this.prepareFormData(this.newReview);
+    
   
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleString();
@@ -134,9 +167,13 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
       this.newReview.lastName = storedLastName;
     }
   
+    // Retrieve the image references from local storage
+    const imageReferences: FileHandle[] | null = JSON.parse(localStorage.getItem('imageFileData') ?? 'null');
+
+  
     // Include the image references in the review data if available
     if (imageReferences && imageReferences.length > 0) {
-      this.newReviewForm.patchValue({ imageReferences: imageReferences });
+      this.newReview.reviewImages = imageReferences;
     }
   
     this.reviewApiService.addReview(this.newReviewForm.value).subscribe(
@@ -152,47 +189,48 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     this.router.navigate(['/review-list']);
   }
   
+  
   onFilesSelected(event: any) {
-    const files: FileList | null = event.target?.files ?? null;
+    const files: FileList = event.target.files;
+    const allowedFileTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
   
-    if (files && files.length !== undefined) { // Use `!== undefined` check
-      const fileCount = files.length;
+    this.fileTypeErrorUnsupported = false;
+    this.fileTypeErrorLimit = false;
   
-      if (fileCount > 2) {
-        this.fileTypeError = 'Only 2 files are allowed.';
-        this.selectedFiles = []; // Clear the selected files
-      } else {
-        this.fileTypeError = ''; // Reset the error message
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
   
-        const allowedTypes = ['.png', '.jpg', '.jpeg', '.pdf'];
-        
+      if (!allowedFileTypes.includes(file.type)) {
+        this.fileTypeErrorUnsupported = true;
+      }
   
-        for (let i = 0; i < fileCount; i++) { // Use `fileCount`
-          const selectedFile = files[i];
-          const fileExtension = selectedFile?.name.split('.').pop()?.toLowerCase();
+      if (this.selectedFiles.length >= 2) {
+        this.fileTypeErrorLimit = true;
+      }
   
-          if (!fileExtension || !allowedTypes.includes(`.${fileExtension}`)) {
-            this.fileTypeError = 'Only PNG, JPG, JPEG, and PDF files are allowed.';
-            
-            break;
-          }
+      if (this.selectedFiles.length < 2 && allowedFileTypes.includes(file.type)) {
+        this.selectedFiles.push(file);
   
-          this.selectedFiles.push(selectedFile);
+        // Add the file name to the imageName property in the newReview object
+        this.newReview.reviewImage = file.name;
   
-          if (this.selectedFiles.length >= 2) {
-            break; // Stop after adding 2 files
-          }
-        }
+        // Save the file name to local storage
+        const uploadedFileNames = JSON.parse(localStorage.getItem('uploadedFiles') || '[]');
+        uploadedFileNames.push(file.name);
+        localStorage.setItem('uploadedFiles', JSON.stringify(uploadedFileNames));
       }
     }
   }
   
   
   
-  
-  
 
 
+  fileDropped(fileHandle: FileHandle) {
+    if (fileHandle.file) {
+      this.selectedFiles.push(fileHandle.file);
+    }
+  }
   
 
  removeImages(index: number) {
@@ -203,7 +241,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   getSafeURL(file: File): any {
     return this.sanitizer.bypassSecurityTrustUrl(URL.createObjectURL(file));
   }
-  
+
   
   prepareFormData(newReview: Review): FormData {
     const formData = new FormData();
@@ -215,7 +253,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
 
     for(var i = 0; i < newReview.reviewImages.length; i++) {
       formData.append(
-        'imageFile',
+        'image',
         newReview.reviewImages[i].file,
         newReview.reviewImages[i].file.name
       );

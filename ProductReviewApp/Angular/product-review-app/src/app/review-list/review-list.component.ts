@@ -45,11 +45,12 @@ export class ReviewListComponent implements OnInit {
     private breakpointObserver: BreakpointObserver,
     private apiService: ReviewApiService, 
     public responseHandlerService: ResponseHandlerService,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
 
-  displayedColumns: string[] = ['reviewId', 'productName', 'firstName', 'lastName', 'zipCode', 'rateCode', 'comments', 'dateTime'];
+  displayedColumns: string[] = ['reviewId', 'productName', 'firstName', 'lastName', 'zipCode', 'rateCode', 'comments', 'images', 'dateTime'];
 
   // Initializes the component and refreshes the page
   ngOnInit(): void {
@@ -101,6 +102,48 @@ export class ReviewListComponent implements OnInit {
     const screenWidth = window.innerWidth;
     this.isMobileView = screenWidth <= 320; // Adjust the width as per your requirements
   }
+
+  downloadImage(review: Review) {
+    // Log the review for debugging purposes
+    console.log(review);
+    
+  
+    // Parse the JSON string in review.reviewImage
+    const reviewImageArray = JSON.parse(review.reviewImage);
+  
+    if (Array.isArray(reviewImageArray) && reviewImageArray.length > 0) {
+      // Get the file name from the first item in the array
+      const fileName = reviewImageArray[0].name;
+  
+      // Construct the image URL using the fileName
+      const imageUrl = `http://localhost:8080/reviews/${fileName}`;
+  
+      // Use Angular's HttpClient to make an HTTP GET request to the image URL
+      this.http.get(imageUrl, { responseType: 'blob' }).subscribe((data) => {
+        // Create a blob object and trigger a file download
+        const blob = new Blob([data], { type: 'image/jpeg' });
+        const url = window.URL.createObjectURL(blob);
+  
+        // Create a link element for downloading the image
+        const a = document.createElement('a');
+        a.href = url;
+  
+        // Set the download attribute to the file name (using the extracted fileName)
+        a.download = fileName;
+  
+        // Trigger a click event on the link element to initiate the download
+        a.click();
+  
+        // Clean up
+        window.URL.revokeObjectURL(url);
+        localStorage.getItem('imageFileData');
+      });
+    } else {
+      console.error('No image information found in review.reviewImage');
+    }
+  }
+  
+  
 
   // Loads all the reviews using the ReviewApiService and updates the paged reviews
   loadReviews(): void {

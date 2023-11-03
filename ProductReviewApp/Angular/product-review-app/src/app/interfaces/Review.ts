@@ -12,4 +12,5 @@ export interface Review {
   comments: string;
   dateTime: string;
   reviewImages: FileHandle[]
+  reviewImage: string;
 }

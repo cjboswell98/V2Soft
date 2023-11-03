@@ -22,8 +22,8 @@ public class ReviewDomainDTO {
     @Field("historyList")
     private final List<Review> historyList = new ArrayList<>();
 
-    public ReviewDomainDTO() {
-    }
+    @Field("images")
+    private final String reviewImage = new String();
 
     // Getters and Setters (Including Current Fields)
 

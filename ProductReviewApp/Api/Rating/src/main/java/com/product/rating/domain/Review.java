@@ -26,7 +26,7 @@ public class Review {
     private List<Review> historyList = new ArrayList<>();
 
     @Field("images")
-    private Set<Image> reviewImages;
+    private String reviewImage;
 
     public Review() {
     }
@@ -129,12 +129,12 @@ public class Review {
         historyList.add(reviewId);
     }
 
-    public Set<Image> getReviewImages() {
-        return reviewImages;
+    public String getReviewImage() {
+        return reviewImage;
     }
 
-    public void setReviewImages(Set<Image> reviewImages) {
-        this.reviewImages = reviewImages;
+    public void setReviewImages(String reviewImage) {
+        this.reviewImage = reviewImage;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class Review {
                 ", comments='" + comments + '\'' +
                 ", dateTime='" + dateTime + '\'' +
                 ", historyList=" + historyList +
-                ", reviewImages=" + reviewImages +
+                ", reviewImages=" + reviewImage +
                 '}';
     }
 }

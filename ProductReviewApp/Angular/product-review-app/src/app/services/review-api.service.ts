@@ -41,4 +41,9 @@ export class ReviewApiService {
     return this.http.delete("http://localhost:8080/reviews/deleteReview/" + reviewId);
   }
 
+  getImageDetails(id: string): Observable<any> {
+    // Make an HTTP request to your backend to retrieve image details
+    return this.http.get<any>(`http://localhost:8080/reviews/image/${id}`);
+  }
+
 }

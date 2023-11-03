@@ -23,6 +23,8 @@ import { AdminReviewListComponent } from './admin-review-list/admin-review-list.
 import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './auth-guard/auth.guard';
 import { MatGridListModule } from '@angular/material/grid-list';
+import { DragDirective } from './drag/drag.directive';
+import { ShowImagesComponent } from './show-images/show-images.component';
 
 
 const routes: Routes = [  // Defining an array of route configurations
@@ -44,7 +46,7 @@ const routes: Routes = [  // Defining an array of route configurations
     AdminReviewListComponent,  // The component for the review list
     ReviewSubmitComponent,  // The component for submitting reviews
     LoginComponent,  // The component for user login
-    RegisterComponent, HomeComponent,  // The component for user registration
+    RegisterComponent, HomeComponent, DragDirective, ShowImagesComponent,  // The component for user registration
   ],
   imports: [  // Array of modules this module depends on
     BrowserModule,  // The browser module for use in the browser
