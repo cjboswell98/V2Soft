@@ -103,26 +103,13 @@ export class ReviewListComponent implements OnInit {
     this.isMobileView = screenWidth <= 320; // Adjust the width as per your requirements
   }
 
-  downloadImage(review: Review) {
+  downloadImages(review: Review) {
     // Log the review for debugging purposes
     console.log(review);
   
-    let fileName: string ='';
+    const fileNames = review.reviewImage.split(',').map((fileName) => fileName.trim());
   
-    try {
-      // Try to parse review.reviewImage as JSON
-      const reviewImageArray = JSON.parse(review.reviewImage);
-  
-      if (Array.isArray(reviewImageArray) && reviewImageArray.length > 0) {
-        // Get the file name from the first item in the array
-        fileName = reviewImageArray[0].name;
-      }
-    } catch (error) {
-      // Parsing as JSON failed, so assume review.reviewImage is a plain file name
-      fileName = review.reviewImage;
-    }
-  
-    if (fileName) {
+    fileNames.forEach((fileName) => {
       // Construct the image URL using the fileName
       const imageUrl = `http://localhost:8080/reviews/${fileName}`;
   
@@ -145,10 +132,9 @@ export class ReviewListComponent implements OnInit {
         // Clean up
         window.URL.revokeObjectURL(url);
       });
-    } else {
-      console.error('No valid image information found in review.reviewImage');
-    }
+    });
   }
+  
   
   
 
