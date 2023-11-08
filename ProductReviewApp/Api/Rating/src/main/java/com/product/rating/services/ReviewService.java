@@ -120,7 +120,7 @@ public class ReviewService {
 
             if (!reviews.isEmpty()) {
                 int lastReviewId = reviews.get(0).getReviewId();
-                reviewCounter = Math.max(reviewCounter, lastReviewId + 1);
+                reviewCounter = lastReviewId + 1; // Start from the next number
             } else {
                 System.out.println("Reviews list is empty. Resetting counter to 1.");
                 reviewCounter = 1; // Reset the counter to 1
@@ -136,6 +136,7 @@ public class ReviewService {
             throw new RuntimeException("Failed to add review: " + e.getMessage());
         }
     }
+
 
 
 

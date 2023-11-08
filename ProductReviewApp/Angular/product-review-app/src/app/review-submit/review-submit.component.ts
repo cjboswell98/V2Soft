@@ -184,7 +184,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     );
   
     this.loadReviews();
-    this.router.navigate(['/review-list']);
+    this.router.navigate(['/confirmation']); // Replace 'confirmation' with your actual route path
   }
   
   

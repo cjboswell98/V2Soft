@@ -1,0 +1,51 @@
+/* Add unique styles to your confirmation page */
+body {
+    background-color: black; /* Replace with your desired background color */
+  }
+  
+
+.confirmation-container {
+    text-align: center;
+    background-color: black;
+    color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    width: 1000px;
+    margin: 0 auto;
+    margin-top: 173px;
+  }
+
+  h1 {
+    color: goldenrod;
+    font-weight: bold;
+}
+
+p {
+    color: green;
+    font-weight: bold;
+}
+  
+  .confirmation-message {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  
+  .countdown-text {
+    font-size: 18px;
+  }
+  
+  /* Unique animation for the countdown text */
+  @keyframes countdownAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .countdown-text span {
+    font-size: 36px;
+    font-weight: bold;
+    color: #f44336;
+    animation: countdownAnimation 1s linear infinite;
+  }
+  

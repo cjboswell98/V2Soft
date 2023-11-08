@@ -12,6 +12,14 @@
   }
   
   
+
+.mat-sort-header-content {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    margin-left: 35px;
+}
+  
   .space-buttons {
     flex: 1; /* This will push the button to the right */
     text-align: right; /* Aligns the button's text to the right */

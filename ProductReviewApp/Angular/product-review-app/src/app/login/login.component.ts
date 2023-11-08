@@ -26,6 +26,7 @@ export class LoginComponent {
   constructor(private http: HttpClient, private router: Router) {}
 
   ngOnInit() {
+    localStorage.removeItem('loginStatus');
     this.newReviewForm = new FormGroup({
       clientId: new FormControl(localStorage.getItem('clientId')),
       username: new FormControl('', [Validators.required, this.validateUsername()]), // Use custom validator for username

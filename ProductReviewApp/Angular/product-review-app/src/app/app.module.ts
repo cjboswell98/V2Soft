@@ -25,11 +25,13 @@ import { AuthGuard } from './auth-guard/auth.guard';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { DragDirective } from './drag/drag.directive';
 import { ShowImagesComponent } from './show-images/show-images.component';
+import { ConfirmationComponent } from './confirmation/confirmation.component';
 
 
 const routes: Routes = [  // Defining an array of route configurations
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },  // Redirecting the empty path to the 'review-list' path
+  { path: 'confirmation', component: ConfirmationComponent, canActivate: [AuthGuard]},
   { path: 'review-list', component: ReviewListComponent, canActivate: [AuthGuard]  },  // Configuring the 'review-list' path to use the ReviewListComponent
   { path: 'admin-review-list', component: AdminReviewListComponent, canActivate: [AuthGuard]  },
   { path: 'review-submit', component: ReviewSubmitComponent, canActivate: [AuthGuard]},  // Configuring the 'review-submit' path to use the ReviewSubmitComponent
@@ -46,7 +48,7 @@ const routes: Routes = [  // Defining an array of route configurations
     AdminReviewListComponent,  // The component for the review list
     ReviewSubmitComponent,  // The component for submitting reviews
     LoginComponent,  // The component for user login
-    RegisterComponent, HomeComponent, DragDirective, ShowImagesComponent,  // The component for user registration
+    RegisterComponent, HomeComponent, DragDirective, ShowImagesComponent, ConfirmationComponent,  // The component for user registration
   ],
   imports: [  // Array of modules this module depends on
     BrowserModule,  // The browser module for use in the browser

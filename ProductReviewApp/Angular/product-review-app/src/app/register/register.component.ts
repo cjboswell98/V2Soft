@@ -25,6 +25,10 @@ export class RegisterComponent {
     this.fetchClientsData();
   }
 
+  ngOnInit() {
+    localStorage.removeItem('loginStatus');
+  }
+
   fetchClientsData(): void {
     this.http.get('http://localhost:8080/reviews/viewClients').subscribe((data: any) => {
       this.clients = data;
