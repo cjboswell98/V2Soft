@@ -148,18 +148,32 @@ public class ProductController {
             String result = reviewService.addReview(newReview);
 
             String fileName = newReview.getReviewImage();
-            // Remove square brackets and any extra quotes if present
-            fileName = fileName.replaceAll("\\[|\\]|\"", "");
+            // Split the file names into an array
+            String[] fileNames = fileName.split(", ");
 
-            String endpointWithFileName = "C:/Users/cboswell/OneDrive - V2SOFT INC/Desktop/" + fileName;
-            System.out.println(endpointWithFileName);
+            // Create a StringBuilder to concatenate attachment file paths
+            StringBuilder attachmentPaths = new StringBuilder();
+
+            // Loop through the file names and construct the file paths
+            for (int i = 0; i < fileNames.length; i++) {
+                // Remove any extra quotes if present
+                String cleanFileName = fileNames[i].replaceAll("\"", "");
+                String endpointWithFileName = "C:/Users/cboswell/OneDrive - V2SOFT INC/Desktop/" + cleanFileName;
+                attachmentPaths.append(endpointWithFileName);
+
+                // Add a comma and space if there are more attachments
+                if (i < fileNames.length - 1) {
+                    attachmentPaths.append(", ");
+                }
+                System.out.println(endpointWithFileName);
+            }
 
             // Assuming you have the necessary details to create an EmailDetails object
             EmailDetails emailDetails = new EmailDetails();
             emailDetails.setRecipient(newReview.getEmail());
             emailDetails.setSubject("Review Confirmation");
-            emailDetails.setMsgBody("Thank you for submitting your review.");
-            emailDetails.setAttachment(endpointWithFileName);
+            emailDetails.setMsgBody("Thank you for submitting your review");
+            emailDetails.setAttachment(attachmentPaths.toString()); // Set the concatenated attachment file paths
 
             // Send the confirmation email
             String emailStatus = emailService.sendMailWithAttachment(emailDetails);
@@ -169,6 +183,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add review: " + e.getMessage());
         }
     }
+
 
 
 

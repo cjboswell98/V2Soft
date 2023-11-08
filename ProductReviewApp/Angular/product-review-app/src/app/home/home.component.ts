@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent {
+  userFirstName: string = localStorage.getItem('firstName') || ''; // Replace 'John' with a default name
 
   constructor(private router: Router) {}
 

@@ -33,6 +33,7 @@ export class ReviewListComponent implements OnInit {
   desktopView: any;
   isMobileView: boolean = false;
   loggedInUser: any;
+  userFirstName: string = localStorage.getItem('firstName') || ''; // Replace 'John' with a default name
  
   @ViewChild(MatSort) sort: MatSort | undefined;
   @ViewChild(MatPaginator) paginator!: MatPaginator;

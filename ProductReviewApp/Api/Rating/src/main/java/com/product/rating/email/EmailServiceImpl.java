@@ -58,44 +58,30 @@ public class EmailServiceImpl implements EmailService {
 
     // Method 2
     // To send an email with attachment
-    public String
-    sendMailWithAttachment(EmailDetails details)
-    {
-        // Creating a mime message
-        MimeMessage mimeMessage
-                = javaMailSender.createMimeMessage();
+    public String sendMailWithAttachment(EmailDetails details) {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
 
         try {
-
-            // Setting multipart as true for attachments to
-            // be send
-            mimeMessageHelper
-                    = new MimeMessageHelper(mimeMessage, true);
+            mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
             mimeMessageHelper.setFrom(sender);
             mimeMessageHelper.setTo(details.getRecipient());
             mimeMessageHelper.setText(details.getMsgBody());
-            mimeMessageHelper.setSubject(
-                    details.getSubject());
+            mimeMessageHelper.setSubject(details.getSubject());
 
-            // Adding the attachment
-            FileSystemResource file
-                    = new FileSystemResource(
-                    new File(details.getAttachment()));
+            // Split the attachment file paths into an array
+            String[] attachmentFilePaths = details.getAttachment().split(", ");
 
-            mimeMessageHelper.addAttachment(
-                    file.getFilename(), file);
+            for (String filePath : attachmentFilePaths) {
+                FileSystemResource file = new FileSystemResource(new File(filePath));
+                mimeMessageHelper.addAttachment(file.getFilename(), file);
+            }
 
-            // Sending the mail
             javaMailSender.send(mimeMessage);
             return "Mail sent Successfully";
-        }
-
-        // Catch block to handle MessagingException
-        catch (MessagingException e) {
-
-            // Display message when exception occurred
+        } catch (MessagingException e) {
             return "Error while sending mail!!!";
         }
     }
+
 }

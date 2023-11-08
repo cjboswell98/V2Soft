@@ -23,6 +23,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   selectedFiles: File[] = []; // Define selectedFiles as an array of File objects
   fileTypeErrorUnsupported: boolean = false;
   fileTypeErrorLimit: boolean = false;
+  userFirstName: string = localStorage.getItem('firstName') || ''; // Replace 'John' with a default name
 
   
 
