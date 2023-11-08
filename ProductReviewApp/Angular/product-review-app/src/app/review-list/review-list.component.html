@@ -67,49 +67,49 @@
 
     <ng-container matColumnDef="reviewId">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="reviewId"><div class="custom-sort-header-content">Review ID</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.reviewId }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.reviewId }}</td>
     </ng-container>
 
     <ng-container matColumnDef="productName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="productName"><div class="custom-sort-header-content">Product Name</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.productName }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.productName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="firstName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName"><div class="custom-sort-header-content">First Name</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.firstName }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.firstName }}</td>
     </ng-container>
   
     <ng-container matColumnDef="lastName">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName"><div class="custom-sort-header-content">Last Name</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.lastName }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.lastName }}</td>
     </ng-container>
 
     <ng-container matColumnDef="zipCode">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="zipCode"><div class="custom-sort-header-content">Zip Code</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.zipCode }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.zipCode }}</td>
     </ng-container>
 
     <ng-container matColumnDef="rateCode">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="rateCode"><div class="custom-sort-header-content">Rate Code</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.rateCode }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.rateCode }}</td>
     </ng-container>
 
     <ng-container matColumnDef="comments">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="comments"><div class="custom-sort-header-content">Comments</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.comments }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.comments }}</td>
     </ng-container>
 
     <ng-container matColumnDef="dateTime">
       <th mat-header-cell *matHeaderCellDef mat-sort-header="dateTime"><div class="custom-sort-header-content">Date Time</div></th>
-      <td mat-cell *matCellDef="let review">{{ review.dateTime }}</td>
+      <td mat-cell style="text-align: center;" *matCellDef="let review">{{ review.dateTime }}</td>
     </ng-container>
 
     <ng-container matColumnDef="images">
-      <th mat-header-cell *matHeaderCellDef><div class="custom-sort-header-content">Images</div></th>
-      <td mat-cell *matCellDef="let review">
+      <th mat-header-cell *matHeaderCellDef><div style="margin-right: 20px;" class="custom-sort-header-content">Images</div></th>
+      <td style="text-align: center;" mat-cell *matCellDef="let review">
         <button mat-icon-button color="warn" (click)="downloadImage(review)">
-          <mat-icon>images</mat-icon>
+          <mat-icon style="text-align: center;">images</mat-icon>
         </button>
       </td>
     </ng-container>

@@ -17,6 +17,7 @@ public class Review {
     private String productName;
     private String firstName;
     private String lastName;
+    private String email;
     private String zipCode;
     private int rateCode;
     private String comments;
@@ -31,18 +32,18 @@ public class Review {
     public Review() {
     }
 
-    public Review(int reviewId, String clientId, String productName, String firstName, String lastName, String zipCode, int rateCode, String comments, String dateTime) {
+    public Review(int reviewId, String clientId, String productName, String firstName, String lastName, String email, String zipCode, int rateCode, String comments, String dateTime) {
         this.reviewId = reviewId;
         this.clientId = clientId;
         this.productName = productName;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.zipCode = zipCode;
         this.rateCode = rateCode;
         this.comments = comments;
         this.dateTime = dateTime;
     }
-
 
     public void setHistoryList(List<Review> historyList) {
         this.historyList.clear();
@@ -87,6 +88,14 @@ public class Review {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getZipCode() {

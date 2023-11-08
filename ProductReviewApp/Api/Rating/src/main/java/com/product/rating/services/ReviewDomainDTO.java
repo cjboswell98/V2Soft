@@ -14,6 +14,7 @@ public class ReviewDomainDTO {
     private String productName;
     private String firstName;
     private String lastName;
+    private String email;
     private String zipCode;
     private int rateCode;
     private String comments;
@@ -77,6 +78,14 @@ public class ReviewDomainDTO {
         this.lastName = lastName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     // Zip Code
     public String getZipCode() {
         return zipCode;
@@ -119,20 +128,23 @@ public class ReviewDomainDTO {
     }
 
     public void addToHistory() {
-        Review newVersion = new Review(reviewId, clientId,  productName, firstName, lastName, zipCode, rateCode, comments, dateTime);
+        Review newVersion = new Review(reviewId, clientId,  productName, firstName, lastName, email, zipCode, rateCode, comments, dateTime);
         historyList.add(newVersion);
     }
 
     @Override
     public String toString() {
-        return "RatingDomain{" +
-                "reviewId='" + reviewId + '\'' +
+        return "ReviewDomainDTO{" +
+                "reviewId=" + reviewId +
+                ", clientId='" + clientId + '\'' +
                 ", productName='" + productName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
                 ", zipCode='" + zipCode + '\'' +
                 ", rateCode=" + rateCode +
                 ", comments='" + comments + '\'' +
-                ", dateTime='" + dateTime + '\'' ;
+                ", dateTime='" + dateTime + '\'' +
+                '}';
     }
 }

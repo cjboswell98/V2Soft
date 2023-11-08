@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()// Allow unauthenticated access
                 .antMatchers("/reviews/deleteReview/**").permitAll() // Secure the "delete by ID" endpoint
                 .antMatchers("/reviews/updateReview/**").authenticated()// Allow unauthenticated access to all other endpoints
+                .antMatchers("/sendTestEmail").authenticated()// Allow unauthenticated access to all other endpoints
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -32,6 +32,7 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     productName: '',  // Initialize the productName to an empty string
     firstName: '',  // Initialize the firstName to an empty string
     lastName: '',  // Initialize the lastName to an empty string
+    email: '',
     zipCode: 0,  // Initialize the zipCode to 0
     rateCode: 0,  // Initialize the rateCode to 0
     comments: '',  // Initialize the comments to an empty string
@@ -67,11 +68,12 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
     productName: new FormControl('', Validators.required),
     firstName: new FormControl(localStorage.getItem('firstName')),
     lastName: new FormControl(localStorage.getItem('lastName')),
+    email: new FormControl('', Validators.required),
     zipCode: new FormControl('', [Validators.required, this.validateZipCode()]),
     rateCode: new FormControl('', Validators.required),
     comments: new FormControl(''),
     dateTime: new FormControl(''),
-    reviewImage: new FormControl(localStorage.getItem('imageFileData'))
+    reviewImage: new FormControl()
   });
 
   this.fetchMostRecentClient();
@@ -99,36 +101,31 @@ export class ReviewSubmitComponent implements OnInit {  // Definition of the Rev
   }
 
   async uploadImages(selectedFiles: File[]): Promise<void> {
-    const imageFileData: any[] = [];
-  
-    for (const file of selectedFiles) {
-      const formData = new FormData();
-      formData.append('image', file);
-  
-      // Log the file being uploaded
-      console.log(file.name);
-  
-      // Store the image information in the array
-      imageFileData.push({
-        name: file.name,
-        // Include other relevant fields based on your database structure
-      });
-
-      localStorage.setItem('imageFileData', JSON.stringify(imageFileData));
-  
-      // Send the image upload request and store the response
-      const uploadResponse = this.http.post<FileHandle>('http://localhost:8080/reviews/image', formData);
-      // Wait for the response before proceeding
-      await uploadResponse.toPromise();
+    const reviewImageControl = this.newReviewForm.get('reviewImage');
+    
+    if (reviewImageControl) {
+      for (const file of selectedFiles) {
+        const formData = new FormData();
+        formData.append('image', file);
+      
+        // Log the file being uploaded
+        console.log(file.name);
+      
+        // Append the file name to the reviewImage form control
+        const currentReviewImageValue = reviewImageControl.value || '';
+        if (currentReviewImageValue) {
+          reviewImageControl.setValue(currentReviewImageValue + ', ' + file.name);
+        } else {
+          reviewImageControl.setValue(file.name);
+        }
+      
+        // Send the image upload request and store the response
+        const uploadResponse = this.http.post<FileHandle>('http://localhost:8080/reviews/image', formData);
+        // Wait for the response before proceeding
+        await uploadResponse.toPromise();
+      }
     }
-  
-    // Save the image information to local storage
-    localStorage.setItem('imageFileData', JSON.stringify(imageFileData));
   }
-  
-
-  
-  
   
   
   async submitReview(): Promise<void> {

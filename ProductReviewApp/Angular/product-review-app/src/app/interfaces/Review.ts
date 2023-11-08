@@ -7,6 +7,7 @@ export interface Review {
   productName: string;
   firstName: string;
   lastName: string;
+  email: string,
   zipCode: number; 
   rateCode: number;
   comments: string;

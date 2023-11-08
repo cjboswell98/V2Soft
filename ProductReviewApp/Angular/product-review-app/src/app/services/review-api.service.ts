@@ -46,4 +46,10 @@ export class ReviewApiService {
     return this.http.get<any>(`http://localhost:8080/reviews/image/${id}`);
   }
 
+  saveImageNamesForReview(reviewId: number, imageNames: string[]): Observable<string> {
+    const url = `http://localhost:8080/reviews/saveImageNames/${reviewId}`;
+    return this.http.post<string>(url, imageNames);
+  }
+  
+
 }

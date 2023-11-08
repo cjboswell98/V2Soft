@@ -2,8 +2,10 @@ package com.product.rating.controller;
 
 // Import necessary packages and libraries
 import com.product.rating.domain.Client;
+import com.product.rating.domain.EmailDetails;
 import com.product.rating.domain.Image;
 import com.product.rating.domain.Review;
+import com.product.rating.email.EmailService;
 import com.product.rating.repository.ClientRepository;
 import com.product.rating.services.ClientService;
 import com.product.rating.services.ReviewService;
@@ -32,6 +34,7 @@ public class ProductController {
     private final MongoTemplate mongoTemplate;
     private final ClientRepository clientRepository;
 
+    @Autowired private EmailService emailService;
     // Logger declarations
     public static final Logger lowReviewsLogger = LogManager.getLogger("lowReviews");
     private static final Logger formattedReviewLogger = LogManager.getLogger("formattedReview");
@@ -134,17 +137,41 @@ public class ProductController {
     }
 
     // (C) R U D
-    // REST API endpoint to add a new review
+// (C) R U D
+// REST API endpoint to add a new review
+    // (C) R U D
+// REST API endpoint to add a new review
     @PostMapping("/addReview")
     public ResponseEntity<String> addReview(@RequestBody Review newReview) {
         // Try to add a new review
         try {
             String result = reviewService.addReview(newReview);
-            return ResponseEntity.ok(result);
+
+            String fileName = newReview.getReviewImage();
+            // Remove square brackets and any extra quotes if present
+            fileName = fileName.replaceAll("\\[|\\]|\"", "");
+
+            String endpointWithFileName = "C:/Users/cboswell/OneDrive - V2SOFT INC/Desktop/" + fileName;
+            System.out.println(endpointWithFileName);
+
+            // Assuming you have the necessary details to create an EmailDetails object
+            EmailDetails emailDetails = new EmailDetails();
+            emailDetails.setRecipient(newReview.getEmail());
+            emailDetails.setSubject("Review Confirmation");
+            emailDetails.setMsgBody("Thank you for submitting your review.");
+            emailDetails.setAttachment(endpointWithFileName);
+
+            // Send the confirmation email
+            String emailStatus = emailService.sendMailWithAttachment(emailDetails);
+
+            return ResponseEntity.ok(result + " " + emailStatus);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add review: " + e.getMessage());
         }
     }
+
+
+
 
     @PostMapping("/image")
     public ResponseEntity<?> uploadImages(@RequestParam("image") List<MultipartFile> files) throws IOException {

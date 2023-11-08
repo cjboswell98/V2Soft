@@ -106,15 +106,23 @@ export class ReviewListComponent implements OnInit {
   downloadImage(review: Review) {
     // Log the review for debugging purposes
     console.log(review);
-    
   
-    // Parse the JSON string in review.reviewImage
-    const reviewImageArray = JSON.parse(review.reviewImage);
+    let fileName: string ='';
   
-    if (Array.isArray(reviewImageArray) && reviewImageArray.length > 0) {
-      // Get the file name from the first item in the array
-      const fileName = reviewImageArray[0].name;
+    try {
+      // Try to parse review.reviewImage as JSON
+      const reviewImageArray = JSON.parse(review.reviewImage);
   
+      if (Array.isArray(reviewImageArray) && reviewImageArray.length > 0) {
+        // Get the file name from the first item in the array
+        fileName = reviewImageArray[0].name;
+      }
+    } catch (error) {
+      // Parsing as JSON failed, so assume review.reviewImage is a plain file name
+      fileName = review.reviewImage;
+    }
+  
+    if (fileName) {
       // Construct the image URL using the fileName
       const imageUrl = `http://localhost:8080/reviews/${fileName}`;
   
@@ -128,7 +136,7 @@ export class ReviewListComponent implements OnInit {
         const a = document.createElement('a');
         a.href = url;
   
-        // Set the download attribute to the file name (using the extracted fileName)
+        // Set the download attribute to the file name
         a.download = fileName;
   
         // Trigger a click event on the link element to initiate the download
@@ -136,10 +144,9 @@ export class ReviewListComponent implements OnInit {
   
         // Clean up
         window.URL.revokeObjectURL(url);
-        localStorage.getItem('imageFileData');
       });
     } else {
-      console.error('No image information found in review.reviewImage');
+      console.error('No valid image information found in review.reviewImage');
     }
   }
   
