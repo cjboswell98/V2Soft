@@ -174,7 +174,13 @@ public class ProductController {
                 EmailDetails emailDetails = new EmailDetails();
                 emailDetails.setRecipient(newReview.getEmail());
                 emailDetails.setSubject("Review Confirmation");
-                emailDetails.setMsgBody("Thank you for submitting your review");
+                emailDetails.setMsgBody("Thank you for submitting your review!\n \n" +
+                        "Here is your review information...\n \n" +
+                        "Product Name: " + newReview.getProductName() + "\n \n" +
+                        "Name: " + newReview.getFirstName() + " " + newReview.getLastName() + "\n \n" +
+                        "ZipCode: " + newReview.getZipCode() + "\n \n" +
+                        "Rating: " + newReview.getRateCode() + "\n \n" +
+                        "Comments: " + newReview.getComments() + "\n \n");
                 emailDetails.setAttachment(attachmentPaths.toString()); // Set the concatenated attachment file paths
 
                 // Send the confirmation email with attachments
@@ -186,7 +192,13 @@ public class ProductController {
                 EmailDetails emailDetails = new EmailDetails();
                 emailDetails.setRecipient(newReview.getEmail());
                 emailDetails.setSubject("Review Confirmation");
-                emailDetails.setMsgBody("Thank you for submitting your review");
+                emailDetails.setMsgBody("Thank you for submitting your review!\n \n" +
+                        "Here is your review information...\n \n" +
+                        "Product Name: " + newReview.getProductName() + "\n \n" +
+                        "Name: " + newReview.getFirstName() + " " + newReview.getLastName() + "\n \n" +
+                        "ZipCode: " + newReview.getZipCode() + "\n \n" +
+                        "Rating: " + newReview.getRateCode() + "\n \n" +
+                        "Comments: " + newReview.getComments() + "\n \n");
 
                 try {
                     // Send the simple email
